@@ -29,7 +29,7 @@ import {
   useGetDepartmentsQuery,
   useGetRolesQuery
 } from '@/services/endpoints/hrmsApi';
-import { HRMS_FORM_CONFIG, HRMSFormTypes } from '@/models/hrms';
+import { HRMS_FORM_CONFIG, HRMSFormTypes } from '@/types/hrms';
 
 interface ApprovalStep {
   stepOrder: number;
