@@ -30,6 +30,8 @@ interface HRMSFormContainerProps {
   isLoading?: boolean;
   children: React.ReactNode;
   showFormInfo?: boolean;
+  formType?: string;
+  formId?: string;
 }
 
 export default function HRMSFormContainer({
