@@ -1,5 +1,5 @@
 import { baseApi } from '@/services/api';
-import { HRMSFormTypes } from '@/models/hrms';
+import { HRMSFormTypes } from '@/types/hrms';
 
 // HRMS API endpoints using RTK Query
 export const hrmsApi = baseApi.injectEndpoints({
