@@ -529,5 +529,5 @@ HRMSApprovalInstanceSchema.index({ expectedCompletionDate: 1, isOverdue: 1 });
 HRMSApprovalInstanceSchema.index({ 'metadata.departmentContext': 1 });
 HRMSApprovalInstanceSchema.index({ formId: 1 });
 
-export default mongoose.models.HRMSApprovalInstance || 
+export default (mongoose.models?.HRMSApprovalInstance as mongoose.Model<HRMSApprovalInstanceDocument>) || 
   mongoose.model<HRMSApprovalInstanceDocument>("HRMSApprovalInstance", HRMSApprovalInstanceSchema);
