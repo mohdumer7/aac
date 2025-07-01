@@ -13,10 +13,12 @@ import {
   FileTextIcon, 
   AlertCircleIcon,
   CheckCircleIcon,
-  ClockIcon 
+  ClockIcon,
+  DownloadIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { HRMSFormConfig, HRMSFormDocument } from '@/types/hrms';
+import PDFGenerator from './PDFGenerator';
 
 interface HRMSFormContainerProps {
   formConfig: HRMSFormConfig;
