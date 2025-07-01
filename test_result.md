@@ -164,18 +164,52 @@
 - **Dependencies**: Stable, well-maintained packages
 - **Documentation**: Comprehensive inline documentation
 
-## Next Steps
-1. Complete frontend compilation
-2. Test all implemented features
-3. Fix any compilation or runtime issues
-4. Validate PDF templates for all form types
-5. Test flow designer functionality end-to-end
+## User Testing Guide
 
-## Notes
-- Frontend is currently compiling and installing TypeScript dependencies
-- All major components have been implemented
-- Integration points have been established
-- Ready for comprehensive testing once frontend is ready
+### Prerequisites
+1. **Authentication Required**: Log in through NextAuth (Azure AD or Credentials)
+2. **Database**: Ensure MongoDB is running with test data
+3. **Permissions**: User needs HRMS access permissions
+
+### Testing the Visual Flow Designer
+1. Navigate to: `/dashboard/hrms/approval-flows`
+2. Create a new flow or select existing flow
+3. Click "Flow Designer" from the dropdown menu
+4. Test features:
+   - Drag approval steps from right panel
+   - Double-click steps to configure approvers
+   - Connect steps with drag-and-drop
+   - Use "Auto Layout" button
+   - Save design and test flow validation
+
+### Testing PDF Generation
+1. Navigate to any submitted HRMS form (not draft status)
+2. Scroll to "Form Information" section
+3. Click "Generate PDF" button
+4. Configure options:
+   - Organization name and custom filename
+   - Include/exclude approval history
+   - PDF format and quality settings
+5. Click "Generate & Download"
+6. Verify PDF contains:
+   - Professional formatting
+   - All form data
+   - Approval history (if enabled)
+   - Organization branding
+
+### API Testing (For Developers)
+Use tools like Postman with authenticated session:
+- `POST /api/hrms/approval-flows` (Create flow)
+- `POST /api/hrms/approval-flows/[id]/design` (Save flow design)
+- `POST /api/hrms/forms/[formType]/[id]/generate-pdf` (Generate PDF data)
+
+## Next Steps
+1. **Setup Authentication**: Configure NextAuth with appropriate providers
+2. **Create Test Data**: Add sample HRMS forms and users for testing
+3. **User Acceptance Testing**: Test with actual HR workflows
+4. **Performance Testing**: Test with large forms and complex flows
+5. **Mobile Testing**: Verify responsive design on mobile devices
 
 ---
-*Last Updated: December 16, 2024*
+**Status**: ✅ Implementation Complete - Ready for User Testing
+**Last Updated**: December 16, 2024
