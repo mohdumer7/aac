@@ -162,6 +162,8 @@ export default function EditHRMSFormPage() {
         onSaveDraft={handleSaveDraft}
         onUpdate={handleUpdate}
         isLoading={isUpdating || isSaving}
+        formType={formType}
+        formId={formId}
       >
         {formConfig.sections.map((section) => (
           <HRMSFormSection
