@@ -382,5 +382,5 @@ HRMSApprovalFlowSchema.index({ applicableDepartments: 1 });
 HRMSApprovalFlowSchema.index({ applicableLocations: 1 });
 HRMSApprovalFlowSchema.index({ createdAt: -1 });
 
-export default mongoose.models.HRMSApprovalFlow || 
+export default (mongoose.models?.HRMSApprovalFlow as mongoose.Model<HRMSApprovalFlowDocument>) || 
   mongoose.model<HRMSApprovalFlowDocument>("HRMSApprovalFlow", HRMSApprovalFlowSchema);
