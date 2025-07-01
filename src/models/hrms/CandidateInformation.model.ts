@@ -247,5 +247,5 @@ CandidateInformationSchema.index({ status: 1 });
 CandidateInformationSchema.index({ linkedManpowerRequisition: 1 });
 CandidateInformationSchema.index({ createdAt: -1 });
 
-export default mongoose.models.CandidateInformation || 
+export default (mongoose.models?.CandidateInformation as mongoose.Model<CandidateInformationDocument>) || 
   mongoose.model<CandidateInformationDocument>("CandidateInformation", CandidateInformationSchema);

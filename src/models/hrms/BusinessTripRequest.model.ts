@@ -223,5 +223,5 @@ BusinessTripRequestSchema.index({ periodFrom: 1, periodTo: 1 });
 BusinessTripRequestSchema.index({ status: 1 });
 BusinessTripRequestSchema.index({ createdAt: -1 });
 
-export default mongoose.models.BusinessTripRequest || 
+export default (mongoose.models?.BusinessTripRequest as mongoose.Model<BusinessTripRequestDocument>) || 
   mongoose.model<BusinessTripRequestDocument>("BusinessTripRequest", BusinessTripRequestSchema);

@@ -332,5 +332,5 @@ EmployeeInformationSchema.index({ linkedUser: 1 });
 EmployeeInformationSchema.index({ linkedNewEmployeeJoining: 1 });
 EmployeeInformationSchema.index({ createdAt: -1 });
 
-export default mongoose.models.EmployeeInformation || 
+export default (mongoose.models?.EmployeeInformation as mongoose.Model<EmployeeInformationDocument>) || 
   mongoose.model<EmployeeInformationDocument>("EmployeeInformation", EmployeeInformationSchema);

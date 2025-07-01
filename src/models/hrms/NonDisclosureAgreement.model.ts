@@ -412,5 +412,5 @@ NonDisclosureAgreementSchema.index({ linkedUser: 1 });
 NonDisclosureAgreementSchema.index({ linkedNewEmployeeJoining: 1 });
 NonDisclosureAgreementSchema.index({ createdAt: -1 });
 
-export default mongoose.models.NonDisclosureAgreement || 
+export default (mongoose.models?.NonDisclosureAgreement as mongoose.Model<NonDisclosureAgreementDocument>) || 
   mongoose.model<NonDisclosureAgreementDocument>("NonDisclosureAgreement", NonDisclosureAgreementSchema);

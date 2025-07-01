@@ -305,5 +305,5 @@ BeneficiaryDeclarationSchema.index({ effectiveDate: -1 });
 BeneficiaryDeclarationSchema.index({ versionNumber: -1 });
 BeneficiaryDeclarationSchema.index({ createdAt: -1 });
 
-export default mongoose.models.BeneficiaryDeclaration || 
+export default (mongoose.models?.BeneficiaryDeclaration as mongoose.Model<BeneficiaryDeclarationDocument>) || 
   mongoose.model<BeneficiaryDeclarationDocument>("BeneficiaryDeclaration", BeneficiaryDeclarationSchema);

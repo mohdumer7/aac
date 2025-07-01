@@ -323,5 +323,5 @@ AccommodationTransportConsentSchema.index({ linkedEmployeeInformation: 1 });
 AccommodationTransportConsentSchema.index({ linkedUser: 1 });
 AccommodationTransportConsentSchema.index({ createdAt: -1 });
 
-export default mongoose.models.AccommodationTransportConsent || 
+export default (mongoose.models?.AccommodationTransportConsent as mongoose.Model<AccommodationTransportConsentDocument>) || 
   mongoose.model<AccommodationTransportConsentDocument>("AccommodationTransportConsent", AccommodationTransportConsentSchema);

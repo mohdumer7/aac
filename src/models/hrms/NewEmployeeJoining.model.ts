@@ -264,5 +264,5 @@ NewEmployeeJoiningSchema.index({ linkedManpowerRequisition: 1 });
 NewEmployeeJoiningSchema.index({ dateOfJoining: -1 });
 NewEmployeeJoiningSchema.index({ createdAt: -1 });
 
-export default mongoose.models.NewEmployeeJoining || 
+export default (mongoose.models?.NewEmployeeJoining as mongoose.Model<NewEmployeeJoiningDocument>) || 
   mongoose.model<NewEmployeeJoiningDocument>("NewEmployeeJoining", NewEmployeeJoiningSchema);

@@ -303,5 +303,5 @@ AssetsITAccessSchema.index({ linkedUser: 1 });
 AssetsITAccessSchema.index({ dateOfRequest: -1 });
 AssetsITAccessSchema.index({ createdAt: -1 });
 
-export default mongoose.models.AssetsITAccess || 
+export default (mongoose.models?.AssetsITAccess as mongoose.Model<AssetsITAccessDocument>) || 
   mongoose.model<AssetsITAccessDocument>("AssetsITAccess", AssetsITAccessSchema);
