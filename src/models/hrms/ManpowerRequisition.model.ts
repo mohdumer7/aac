@@ -286,5 +286,5 @@ ManpowerRequisitionSchema.index({ requestedBy: 1, status: 1 });
 ManpowerRequisitionSchema.index({ department: 1, status: 1 });
 ManpowerRequisitionSchema.index({ createdAt: -1 });
 
-export default mongoose.models.ManpowerRequisition || 
+export default (mongoose.models?.ManpowerRequisition as mongoose.Model<ManpowerRequisitionDocument>) || 
   mongoose.model<ManpowerRequisitionDocument>("ManpowerRequisition", ManpowerRequisitionSchema);
