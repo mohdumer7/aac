@@ -382,7 +382,13 @@ export const {
   // Lazy queries for conditional loading
   useLazyGetFormByIdQuery,
   useLazyGetApprovalFlowByIdQuery,
-  useLazyGetApprovalInstanceByIdQuery
+  useLazyGetApprovalInstanceByIdQuery,
+
+  // PDF Generation
+  useGenerateFormPDFMutation,
+
+  // Flow Designer
+  useSaveFlowDesignMutation
 } = hrmsApi;
 
 // Helper function to get form-specific hooks
