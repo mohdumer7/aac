@@ -43,7 +43,9 @@ export default function HRMSFormContainer({
   onUpdate,
   isLoading = false,
   children,
-  showFormInfo = true
+  showFormInfo = true,
+  formType,
+  formId
 }: HRMSFormContainerProps) {
   const [isDraft, setIsDraft] = useState(initialData?.isDraft ?? true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
