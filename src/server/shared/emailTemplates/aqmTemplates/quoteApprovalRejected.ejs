@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= subject %>
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+
+            padding: 20px;
+            border-radius: 8px;
+
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #f2f2f2;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        .signature {
+            font-weight: bold;
+            padding-top: 20px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            padding: 20px 30px;
+            /* Adjust padding for better spacing */
+            font-size: 18px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            flex: 1;
+            /* Allows buttons to take equal space */
+            text-align: center;
+            min-width: 100px;
+            margin: 5px;
+            /* Ensures buttons don't shrink too much */
+        }
+
+        .approve-btn {
+            background-color: #28a745;
+        }
+
+        .reject-btn {
+            background-color: #dc3545;
+        }
+
+        /* Ensure buttons take full width on smaller screens */
+        @media (max-width: 480px) {
+            .button {
+                flex: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <p>Hi User,</p>
+    <p>The above mentioned quote no got rejected. The reason for rejection is mentioned below.</p>
+    <p>Kindly fix and request again.</p>
+   
+    <h3><%= reason %></h3>
+
+    <p>This is an auto generated mail. Please do not reply.</p>
+
+    <p class="signature">Thanks & Regards!</p>
+
+    <p>
+        <%= senderName %>
+    </p>
+    <p>Acero Building Systems</p>
+</body>
+
+</html>

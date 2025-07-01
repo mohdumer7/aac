@@ -1,0 +1,345 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+@layer base {
+
+  :root  {
+    --background: 0 8% 95%;
+    --foreground: 0 5% 10%;
+    --card: 0 8% 90%;
+    --card-foreground: 0 5% 15%;
+    --popover: 0 8% 95%;
+    --popover-foreground: 0 95% 10%;
+    --primary: 0 93.4% 35.9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 10% 71%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: -38 10% 85%;
+    --muted-foreground: 0 5% 40%;
+    --accent: -38 10% 80%;
+    --accent-foreground: 0 5% 15%;
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 0 5% 90%;
+    --border: 0 20% 71%;
+    --input: 0 20% 50%;
+    --ring: 0 93.4% 35.9%;
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  .dark  {
+    --background: 0 10% 10%;
+    --foreground: 0 5% 90%;
+    --card: 0 8% 10%;
+    --card-foreground: 0 5% 90%;
+    --popover: 0 10% 5%;
+    --popover-foreground: 0 5% 90%;
+    --primary: 0 93.4% 35.9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 10% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: -38 10% 25%;
+    --muted-foreground: 0 5% 65%;
+    --accent: -38 10% 25%;
+    --accent-foreground: 0 5% 90%;
+    --destructive: 0 50% 50%;
+    --destructive-foreground: 0 5% 90%;
+    --border: 0 20% 50%;
+    --input: 0 20% 50%;
+    --ring: 0 93.4% 35.9%;
+    --radius: 0.75rem;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+  
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: #e7e7e7;
+  /* border: 1px solid #cacaca; */
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+border: 3px solid transparent;
+ background-clip: content-box;
+  background-color: #d55959;
+}
+
+.dnd-overlay {
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
+
+.fixed-position {
+  transition: none !important;
+  animation: none !important;
+}
+
+.animated-ticket {
+  pointer-events: none;
+}
+
+/* Force immediate renders for improved animation */
+[data-ticket-id] {
+  contain: layout;
+  will-change: transform;
+}
+
+@keyframes highlight {
+  0% { background-color: rgba(96, 165, 250, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.animate-highlight {
+  animation: highlight 1s ease-in-out;
+}
+
+@keyframes highlight {
+  0% { background-color: rgba(96, 165, 250, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.animate-highlight {
+  animation: highlight 1s ease-in-out;
+}
+
+.fixed-position {
+  transition: none !important;
+}
+
+/* Enhanced animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes highlight {
+  0% { background-color: rgba(59, 130, 246, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.animate-highlight {
+  animation: highlight 1s ease-in-out;
+}
+
+/* Enhanced scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Custom shadows */
+.shadow-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-dropdown {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Enhanced focus states */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-white;
+}
+
+/* Enhanced button states */
+.btn-hover-effect {
+  @apply transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-md active:translate-y-0 active:shadow-sm;
+}
+
+/* Badge consistent styling */
+.badge-status {
+  @apply text-xs font-medium px-2 py-0.5 rounded-md;
+}
+
+/* Custom toast styling */
+.custom-toast {
+  @apply shadow-lg rounded-xl border border-gray-100 !important;
+}
+
+/* Modern input styling */
+.input-modern {
+  @apply rounded-lg border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+}
+
+/* Card hover effect */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:border-primary/20;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { 
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-10px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Custom scrollbar for a more modern look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Glass effect for modals/dialogs */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Modern input focus styles */
+.input-focus-ring {
+  transition: all 0.2s ease;
+}
+
+.input-focus-ring:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgba(99, 102, 241, 0.6);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

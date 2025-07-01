@@ -1,0 +1,95 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: change directory
+        shell: bash
+        run: cd E:\AceroApplications
+
+      - name: Pull latest changes from master
+        shell: bash
+        run: |
+          git pull origin master
+
+      - name: Delete node_modules
+        shell: bash
+        run: |
+          if [ -d "node_modules" ]; then
+            echo "Removing existing node_modules directory..."
+            rm -rf node_modules
+          else
+            echo "No node_modules directory to delete."
+          fi
+
+      - name: Install dependencies
+        shell: bash
+        run: npm install
+
+      - name: Load environment variables from .env file
+        shell: bash
+        run: |
+          set -a && source /e/AceroApplications/.env && set +a
+
+      - name: Check if any Node.js process is running and kill it
+        shell: bash
+        run: |
+          echo "Looking for running node.exe processes..."
+          NODE_PROCESSES=$(tasklist | grep "node.exe" || true)
+
+          if [ -n "$NODE_PROCESSES" ]; then
+            echo "Found Node.js process(es):"
+            echo "$NODE_PROCESSES"
+            echo
+
+            PIDS=$(echo "$NODE_PROCESSES" | awk '{print $2}')
+            for PID in $PIDS; do
+              echo "Attempting to kill Node.js process with PID $PID..."
+              taskkill //PID $PID //F || echo "Failed to kill PID $PID (might already be dead or inaccessible)"
+            done
+          else
+            echo "No running Node.js process found."
+          fi
+
+      - name: Build the application
+        shell: bash
+        run: |
+          export $(grep -v '^#' .env | xargs)  # Load env again in case it's needed here
+          npm run build
+
+      - name: Start the application in the background
+        shell: bash
+        run: |
+          set -a && source /e/AceroApplications/.env && set +a
+
+          echo "Starting the app in the background..."
+          nohup npm run start > app.log 2>&1 &
+
+          # Give the app a few seconds to start
+          sleep 5
+
+          # Check if node is running
+          NODE_RUNNING=$(tasklist | grep "node.exe" || true)
+          if [ -n "$NODE_RUNNING" ]; then
+            echo "Node.js process is running:"
+            echo "$NODE_RUNNING"
+          else
+            echo "Failed to start Node.js application."
+            exit 1
+          fi
+
+      - name: Tail application logs (Optional)
+        shell: bash
+        run: |
+          echo "Tailing the full app logs..."
+          cat app.log

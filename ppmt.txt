@@ -1,0 +1,95 @@
+You are a cheif technology officer
+
+════════════════  ►  Goal  ◄  ═══════════════════
+Build a **one‑stop wizard** where HR enters a person’s data ONCE, can jump freely among steps, save drafts automatically, and on “Finish” generates pixel‑perfect PDFs of all legacy HR forms below, writing a FormRecord for each:
+
+
+|------|--------------------------------|
+| **F01 – Manpower Requisition** → `HR FORM 01 MAN POWER REQUEST FORM.doc` |
+| **F03 – Candidate Information** → `HR FORM 03 CANDIDATE INFORMATION FORM.doc` |
+| **F12 – Business Trip Request** → `HR FORM 12 BUSINESS TRIP FORM.doc` |
+| **F04 – New Employee Joining** → found inside `New Employee Joining Documents.pdf` |
+| **F05 – Employee Information** → same PDF |
+| **F08 – Assets & IT Access + Declaration** → same PDF |
+| **F09 – Consent (Accommodation / Transportation)** → same PDF |
+| **F02 – Beneficiary Declaration** → same PDF |
+| **F06 – Nondisclosure Agreement** → same PDF |
+| **Orientation Form** → same PDF |
+
+════════════════  ►  Unified Data Buckets  ◄  ════════════════
+1. Personal / Identity  
+2. Contact  
+3. Family  
+4. Employment / Position  
+5. Compensation & Benefits  
+6. Recruitment Workflow  
+7. Travel / Relocation  
+8. Systems / Assets  
+9. Orientation & Training  
+10. Declarations & Legal  
+
+Every field in every template maps to one of these buckets.
+
+════════════════  ►  Deliverables  ◄  ═══════════════════════
+1. **New Mongoose schemas** in `packages/db/models`:  
+   Contact, FamilyMember, JobContract, CompensationItem, TripRequest, AssetRequest, OrientationRecord, Beneficiary, FormRecord (all reference `userId: Types.ObjectId`).
+
+2. **tRPC routers & API routes** under `/api/hr/...` with full CRUD for each collection.
+
+3. **Wizard UI** in `apps/web/app/(hr)/wizard/[[...step]]/page.tsx` implementing 9 free‑navigation steps:  
+   1. Personal & Contact  
+   2. Family & Beneficiary  
+   3. Position & Compensation  
+   4. Recruitment Details  
+   5. Travel / Relocation  
+   6. Assets & Access  
+   7. Orientation & Training  
+   8. Declarations  
+   9. Review → Finish  
+   • Autosave draft to localStorage **and** `/api/hr/draft` every 10 s.  
+
+4. **Template engine** in `packages/forms`:  
+   • Loads `.docx` or `.pdf` templates from `/templates`.  
+   • Fills merge‑fields via `docxtemplater`.  
+   • Converts to PDF with LibreOffice (Lambda layer) or `pdf-lib` fallback.  
+   • Returns presigned S3 URLs.
+
+5. **Generate action** – POST `/api/hr/generate`:  
+   • Validates wizard data (Zod).  
+   • Upserts `User` + linked docs.  
+   • Iterates the templates list, generates PDFs, stores URLs in FormRecord.  
+
+6. **Record viewer** at `/hr/records/[id]` showing metadata, download links, and **Edit & Regenerate**.
+
+════════════════  ►  Acceptance Criteria  ◄  ════════════════
+• Creating a candidate through the wizard produces at least F01 & F03 PDFs.  
+• When `jobContracts.status === "ACTIVE"` the employee‑only forms (F04–F09, F02, F06, Orientation) become available.  
+• All generated PDFs are pixel‑perfect vs originals.  
+• All ESLint rules and `pnpm test` pass.
+
+════════════════  ►  Commit Guidelines  ◄  ═════════════════
+Incremental commits. Name initial schema commit `20250611_hr_core`.  
+Final commit message:  
+    **feat(hr): one‑stop wizard + automated PDF forms complete**
+
+✦
+Why these forms & buckets?
+F01 – Manpower Requisition captures vacancy reason, budget flag, approvals, and candidate salary slot 
+
+F03 – Candidate Information holds personal, family, contact, salary, notice period, relocation, and declaration fields 
+
+F12 – Business Trip adds travel dates, cash advance, tickets/hotel options, and approvals 
+
+F04 – New Employee Joining logs first‑day logistics and approvals 
+
+F08 – Assets & IT Access and its declaration map to the Assets bucket 
+
+F09 – Consent (Accommodation / Transportation) links to Travel & Declarations buckets 
+
+F05 – Employee Information is the master profile & compensation sheet 
+
+F02 – Beneficiary Declaration belongs to Declarations bucket 
+
+F06 – NDA completes Legal declarations 
+
+Orientation Form records onboarding program completion

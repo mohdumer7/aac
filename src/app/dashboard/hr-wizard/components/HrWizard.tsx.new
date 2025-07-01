@@ -1,0 +1,497 @@
+import React, { useCallback, useEffect, useState, useMemo, useRef, FC } from 'react';
+import { useRouter } from 'next/navigation';
+import { FormProvider, SubmitHandler, UseFormReturn, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { X, Loader2 } from 'lucide-react';
+
+// API
+import { 
+  useSaveWizardStepMutation, 
+  useSubmitWizardMutation, 
+  useUploadDocumentMutation,
+  useDeleteDocumentMutation
+} from '@/services/endpoints/hrWizardApi';
+
+// Types
+import { HRWizardFormData } from '../schemas/hrWizardSchema';
+
+// UI Components
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Form } from '@/components/ui/form';
+
+// Schema
+import { hrWizardSchema } from '../schemas/hrWizardSchema';
+
+// Step Components
+import { PersonalStep } from './steps/PersonalStep';
+import { EmploymentStep } from './steps/EmploymentStep';
+import { VisaStep } from './steps/VisaStep';
+import { IdStep } from './steps/IdStep';
+import { BenefitsStep } from './steps/BenefitsStep';
+import { DocumentsStep } from './steps/DocumentsStep';
+import { LeaveStep } from './steps/LeaveStep';
+import { BankStep } from './steps/BankStep';
+import { ReviewStep } from './steps/ReviewStep';
+
+// Wizard Props Interface
+export interface HrWizardProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  isEditing?: boolean;
+  empId?: string;
+  onSuccess?: () => void;
+}
+
+// Interface for props passed to each step component
+interface StepComponentProps {
+  formMethods: UseFormReturn<HRWizardFormData>;
+  uploadDocument?: (file: File, docType: string) => Promise<void>;
+  deleteDocument?: (documentUrl: string) => Promise<void>;
+  isEditing?: boolean;
+  isLastStep?: boolean;
+  onNext?: () => void;
+  onBack?: () => void;
+  onSaveDraft?: () => Promise<boolean>;
+  isFirstStep?: boolean;
+  isSubmitting?: boolean;
+  isSaving?: boolean;
+}
+
+// Define StepComponent type for consistent typing across step components
+type StepComponent = FC<StepComponentProps>;
+
+// Local interface that matches what DocumentsStep expects
+interface LocalDocumentsStepProps {
+  formMethods: UseFormReturn<HRWizardFormData>;
+  onUpload?: (file: File, documentType: string) => Promise<void>;
+  onDelete?: (documentUrl: string) => Promise<void>;
+  onNext?: () => void;
+  onBack?: () => void;
+  onSaveDraft?: () => Promise<any> | void; // Use 'any' to handle both void and boolean returns
+  isSubmitting?: boolean;
+  isLastStep?: boolean;
+  isFirstStep?: boolean;
+}
+
+// Wrapper component for DocumentsStep to handle special props
+const DocumentsStepComponent: StepComponent = (props) => {
+  const { 
+    formMethods, 
+    isEditing, 
+    isLastStep, 
+    onNext, 
+    onBack, 
+    onSaveDraft,
+    isFirstStep, 
+    isSubmitting, 
+    isSaving,
+    uploadDocument,
+    deleteDocument 
+  } = props;
+  
+  // Create props object that matches what DocumentsStep expects
+  const documentsStepProps: LocalDocumentsStepProps = {
+    formMethods,
+    onUpload: uploadDocument,
+    onDelete: deleteDocument,
+    onNext,
+    onBack,
+    onSaveDraft,
+    isSubmitting,
+    isLastStep,
+    isFirstStep
+  };
+  
+  return <DocumentsStep {...documentsStepProps} />;
+};
+
+// Interface defining a step in the wizard
+interface WizardStep {
+  id: string;
+  title: string;
+  description: string;
+  component: StepComponent;
+}
+
+// Define all steps in the wizard
+const STEPS: WizardStep[] = [
+  {
+    id: 'personal',
+    title: 'Personal Information',
+    description: 'Basic personal details',
+    component: PersonalStep as StepComponent
+  },
+  {
+    id: 'employment',
+    title: 'Employment Details',
+    description: 'Job and employment information',
+    component: EmploymentStep as StepComponent
+  },
+  {
+    id: 'visa',
+    title: 'Visa Information',
+    description: 'Visa and immigration details',
+    component: VisaStep as StepComponent
+  },
+  {
+    id: 'id',
+    title: 'ID Information',
+    description: 'Identification details',
+    component: IdStep as StepComponent
+  },
+  {
+    id: 'benefits',
+    title: 'Benefits',
+    description: 'Employee benefits information',
+    component: BenefitsStep as StepComponent
+  },
+  {
+    id: 'documents',
+    title: 'Documents',
+    description: 'Upload required documents',
+    component: DocumentsStepComponent
+  },
+  {
+    id: 'leave',
+    title: 'Leave',
+    description: 'Leave management details',
+    component: LeaveStep as StepComponent
+  },
+  {
+    id: 'bank',
+    title: 'Bank Details',
+    description: 'Payment and banking information',
+    component: BankStep as StepComponent
+  },
+  {
+    id: 'review',
+    title: 'Review & Submit',
+    description: 'Review and submit all information',
+    component: ReviewStep as StepComponent
+  }
+];
+
+export const HrWizard: FC<HrWizardProps> = ({
+  isOpen,
+  onOpenChange,
+  onSuccess,
+  isEditing,
+  empId,
+}) => {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  
+  // Form state
+  const formMethods = useForm<HRWizardFormData>({
+    resolver: zodResolver(hrWizardSchema),
+    defaultValues: {
+      personal: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        dateOfBirth: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: '',
+      },
+      // Add default values for other steps here
+    },
+    mode: 'onChange',
+  });
+  
+  // API mutation hooks
+  const [saveWizardStep, { isLoading: isSavingApi }] = useSaveWizardStepMutation();
+  const [submitWizard, { isLoading: isSubmittingApi }] = useSubmitWizardMutation();
+  const [uploadDocument, { isLoading: isUploading }] = useUploadDocumentMutation();
+  const [deleteDocument, { isLoading: isDeleting }] = useDeleteDocumentMutation();
+  
+  // Local state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Derived state
+  const CurrentStepComponent = STEPS[currentStep]?.component;
+  const isFirstStep = currentStep === 0;
+  const isLastStep = currentStep === STEPS.length - 1;
+  const progressPercentage = ((currentStep + 1) / STEPS.length) * 100;
+  
+  // Document handlers
+  const handleUploadDocument = async (file: File, docType: string) => {
+    try {
+      await uploadDocument({ file, docType }).unwrap();
+      toast.success('Document uploaded successfully');
+      return true;
+    } catch (error) {
+      toast.error('Failed to upload document');
+      console.error('Upload error:', error);
+      return false;
+    }
+  };
+  
+  const handleDeleteDocument = async (documentUrl: string) => {
+    try {
+      await deleteDocument({ documentUrl }).unwrap();
+      toast.success('Document deleted successfully');
+      return true;
+    } catch (error) {
+      toast.error('Failed to delete document');
+      console.error('Delete error:', error);
+      return false;
+    }
+  };
+  
+  // Navigation handlers
+  const handleNext = () => {
+    // Trigger validation for current step
+    formMethods.trigger().then((isValid) => {
+      if (isValid && currentStep < STEPS.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      }
+    });
+  };
+  
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
+  
+  // Form submission
+  const handleSaveDraft = async () => {
+    setIsSaving(true);
+    try {
+      const formData = formMethods.getValues();
+      await saveWizardStep({
+        formData,
+        empId,
+        currentStep: STEPS[currentStep].id,
+      }).unwrap();
+      
+      toast.success('Draft saved successfully');
+      setIsSaving(false);
+      return true;
+    } catch (error) {
+      toast.error('Failed to save draft');
+      console.error('Save error:', error);
+      setIsSaving(false);
+      return false;
+    }
+  };
+  
+  // Handle form submission
+  const handleFormSubmit: SubmitHandler<HRWizardFormData> = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const response = await submitWizard({
+        formData: data,
+        empId,
+      }).unwrap();
+      
+      toast.success('Form submitted successfully');
+      setIsSubmitting(false);
+      
+      // Close dialog and trigger success callback
+      onOpenChange(false);
+      if (onSuccess) onSuccess();
+      
+      // Optional: Navigate to success page or employee details
+      // router.push(`/dashboard/hr/employees/${response.empId}`);
+    } catch (error) {
+      toast.error('Failed to submit form');
+      console.error('Submit error:', error);
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-[95vw] p-6 overflow-hidden max-h-[90vh]">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-xl font-bold">{isEditing ? 'Edit Employee' : 'Add New Employee'}</DialogTitle>
+        </DialogHeader>
+        
+        {/* Progress and navigation */}
+        <div className="mb-4">
+          {/* Step progress header with percentage */}
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <span className="font-medium">Step {currentStep + 1} of {STEPS.length}</span>
+            <span>{Math.round(progressPercentage)}% Complete</span>
+          </div>
+          
+          {/* Step indicators with connecting line */}
+          <div className="relative mb-4">
+            <div className="flex items-center justify-between relative">
+              {/* Background connecting line */}
+              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 z-0" />
+              
+              {/* Progress line overlay */}
+              <div 
+                className="absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-0 transition-all" 
+                style={{ width: `${(Math.min(currentStep, STEPS.length - 1) / (STEPS.length - 1)) * 100}%` }}
+              />
+              
+              {/* Step buttons */}
+              {STEPS.map((step, index) => {
+                const isActive = index === currentStep;
+                const isPast = index < currentStep;
+                const isFuture = index > currentStep;
+                
+                return (
+                  <div key={step.id} className="flex flex-col items-center relative z-10">
+                    <button
+                      onClick={() => !isFuture && setCurrentStep(index)}
+                      type="button"
+                      disabled={isFuture}
+                      className={`
+                        relative flex items-center justify-center w-8 h-8 rounded-full 
+                        transition-all font-medium text-sm
+                        ${isActive ? 'bg-primary text-white ring-4 ring-primary/20' : 
+                          isPast ? 'bg-primary/80 text-white' : 
+                                'bg-gray-200 text-gray-500 cursor-not-allowed'}
+                      `}
+                      aria-label={`Go to ${step.title}`}
+                    >
+                      {index + 1}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Current step navigation bar */}
+          <div className="flex justify-between items-center mb-2">
+            <div className="text-sm font-semibold">
+              {currentStep + 1}/{STEPS.length}: {STEPS[currentStep].title}
+            </div>
+            
+            <div className="flex gap-2 text-xs">
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  className="text-primary hover:underline"
+                >
+                  « Previous
+                </button>
+              )}
+              
+              {currentStep > 0 && currentStep < STEPS.length - 1 && (
+                <span className="text-muted-foreground">|</span>
+              )}
+              
+              {currentStep < STEPS.length - 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(currentStep + 1)}
+                  className="text-primary hover:underline"
+                >
+                  Next »
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <Progress value={progressPercentage} className="h-1.5" />
+        </div>
+        
+        <Separator className="my-4" />
+        
+        {/* Form content */}
+        <div className="flex-1 overflow-hidden">
+          <FormProvider {...formMethods}>
+            <form onSubmit={formMethods.handleSubmit(handleFormSubmit)} className="space-y-4">
+              {/* Form step content - scrollable */}
+              <div className="overflow-y-auto max-h-[400px] pr-1">
+                <div className="mb-3">
+                  <h2 className="text-lg font-semibold">{STEPS[currentStep].title}</h2>
+                  <p className="text-sm text-muted-foreground">{STEPS[currentStep].description}</p>
+                </div>
+                
+                {CurrentStepComponent && (
+                  <CurrentStepComponent
+                    formMethods={formMethods}
+                    uploadDocument={handleUploadDocument}
+                    deleteDocument={handleDeleteDocument}
+                    isEditing={isEditing}
+                    isLastStep={isLastStep}
+                    onNext={handleNext}
+                    onBack={handleBack}
+                    onSaveDraft={handleSaveDraft}
+                    isFirstStep={isFirstStep}
+                    isSubmitting={isSubmitting || isSubmittingApi}
+                    isSaving={isSaving || isSavingApi}
+                  />
+                )}
+              </div>
+              
+              {/* Footer navigation */}
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div>
+                  {currentStep > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleBack}
+                      disabled={isSubmitting || isSaving}
+                    >
+                      Back
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    type="button" 
+                    variant="outline"
+                    onClick={() => handleSaveDraft()}
+                    disabled={isSubmitting || isSaving}
+                  >
+                    Save Draft
+                  </Button>
+                  
+                  {isLastStep ? (
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || isSaving}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting
+                        </>
+                      ) : (
+                        'Submit'
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      onClick={handleNext}
+                      disabled={isSubmitting || isSaving}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      Next
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </form>
+          </FormProvider>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default HrWizard;
