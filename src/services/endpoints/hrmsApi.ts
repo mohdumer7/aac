@@ -307,6 +307,28 @@ export const hrmsApi = baseApi.injectEndpoints({
         'HRMS_ApprovalInstance',
         'HRMS_Dashboard'
       ]
+    }),
+
+    // === PDF Generation ===
+    generateFormPDF: builder.mutation({
+      query: ({ formType, id, options = {} }) => ({
+        url: `hrms/forms/${formType}/${id}/generate-pdf`,
+        method: 'POST',
+        body: options
+      })
+    }),
+
+    // === Flow Designer Support ===
+    saveFlowDesign: builder.mutation({
+      query: ({ id, designData }) => ({
+        url: `hrms/approval-flows/${id}/design`,
+        method: 'POST',
+        body: { flowDesign: designData }
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'HRMS_ApprovalFlow', id },
+        'HRMS_ApprovalFlow'
+      ]
     })
   }),
   overrideExisting: false
