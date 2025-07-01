@@ -42,7 +42,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useGetApprovalInstancesQuery, useApproveInstanceMutation, useRejectInstanceMutation, useRequestChangesMutation } from '@/services/endpoints/hrmsApi';
-import { HRMS_FORM_CONFIG } from '@/models/hrms';
+import { HRMS_FORM_CONFIG } from '@/types/hrms';
 import HRMSStatusBadge from '@/components/hrms/HRMSStatusBadge';
 import { HRMSApprovalInstanceFilters } from '@/types/hrms';
 
