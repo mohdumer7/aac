@@ -16,7 +16,7 @@ import {
   TrendingUpIcon
 } from 'lucide-react';
 import { useGetHRMSDashboardQuery } from '@/services/endpoints/hrmsApi';
-import { HRMSFormTypes, HRMS_FORM_CONFIG } from '@/models/hrms';
+import { HRMSFormTypes, HRMS_FORM_CONFIG } from '@/types/hrms';
 import Link from 'next/link';
 
 export default function HRMSDashboardPage() {
