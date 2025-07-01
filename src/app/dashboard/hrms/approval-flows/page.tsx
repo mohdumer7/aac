@@ -51,7 +51,7 @@ import {
   useCloneApprovalFlowMutation,
   useDeleteApprovalFlowMutation
 } from '@/services/endpoints/hrmsApi';
-import { HRMS_FORM_CONFIG, HRMSFormTypes } from '@/models/hrms';
+import { HRMS_FORM_CONFIG, HRMSFormTypes } from '@/types/hrms';
 
 export default function ApprovalFlowsPage() {
   const [searchTerm, setSearchTerm] = useState('');
