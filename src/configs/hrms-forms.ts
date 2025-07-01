@@ -1,5 +1,5 @@
 import { HRMSFormConfig } from '@/types/hrms';
-import { HRMSFormTypes } from '@/models/hrms';
+import { HRMSFormTypes } from '@/types/hrms';
 
 // Form configurations for all HRMS forms
 export const HRMS_FORM_CONFIGS: Record<string, HRMSFormConfig> = {
