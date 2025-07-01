@@ -7,6 +7,7 @@ import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import PDFGenerator from '@/components/hrms/PDFGenerator';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { 
   useGetFormByIdQuery,
