@@ -283,6 +283,29 @@ export default function HRMSFormContainer({
                   <p className="text-muted-foreground">{initialData.updatedBy}</p>
                 </div>
               </div>
+              
+              {/* PDF Generation Section for submitted forms */}
+              {formType && formId && initialData?.status && initialData.status !== 'draft' && (
+                <div className="pt-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-sm">Export & Documents</h4>
+                      <p className="text-xs text-muted-foreground">Generate PDF documents for this form</p>
+                    </div>
+                    <PDFGenerator
+                      formType={formType}
+                      formId={formId}
+                      formData={initialData}
+                      triggerButton={
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <DownloadIcon className="h-4 w-4" />
+                          Generate PDF
+                        </Button>
+                      }
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
