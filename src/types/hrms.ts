@@ -123,3 +123,104 @@ export const HRMS_WORKFLOW_STAGES = {
     'training_schedule'
   ]
 };
+
+// Common field types for forms
+export interface HRMSFormField {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox' | 'radio' | 'file';
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  options?: Array<{ value: string; label: string }>;
+  validation?: {
+    min?: number;
+    max?: number;
+    pattern?: string;
+    custom?: (value: any) => boolean | string;
+  };
+}
+
+export interface HRMSFormSection {
+  id: string;
+  title: string;
+  description?: string;
+  fields: HRMSFormField[];
+  conditional?: {
+    dependsOn: string;
+    value: any;
+  };
+}
+
+export interface HRMSFormConfig {
+  formType: HRMSFormTypes;
+  title: string;
+  description: string;
+  sections: HRMSFormSection[];
+  workflow?: {
+    requiresApproval: boolean;
+    approvalFlow?: string;
+    stages: string[];
+  };
+}
+
+// Base document interface (without mongoose specifics)
+export interface HRMSFormDocument {
+  _id?: string;
+  formType: HRMSFormTypes;
+  formData: Record<string, any>;
+  status: HRMSFormStatus;
+  submittedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  submittedAt?: Date;
+  updatedAt?: Date;
+  draftData?: Record<string, any>;
+  approvalHistory?: Array<{
+    stepName: string;
+    approverName: string;
+    status: 'pending' | 'approved' | 'rejected';
+    actionDate?: Date;
+    comments?: string;
+  }>;
+}
+
+// Approval flow types
+export interface HRMSApprovalFlowDocument {
+  _id?: string;
+  flowName: string;
+  flowDescription?: string;
+  formType: HRMSFormTypes;
+  isActive: boolean;
+  flowDesign?: {
+    nodes: any[];
+    edges: any[];
+    viewport?: { x: number; y: number; zoom: number };
+  };
+  createdBy?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface HRMSApprovalInstanceDocument {
+  _id?: string;
+  formId: string;
+  formType: HRMSFormTypes;
+  flowId: string;
+  currentStepIndex: number;
+  status: 'pending' | 'in_progress' | 'approved' | 'rejected' | 'withdrawn';
+  submittedBy?: string;
+  submittedAt?: Date;
+  completedAt?: Date;
+  steps: Array<{
+    stepName: string;
+    stepOrder: number;
+    approverType: string;
+    assignedApprovers: string[];
+    status: 'pending' | 'approved' | 'rejected' | 'skipped';
+    actionBy?: string;
+    actionDate?: Date;
+    comments?: string;
+  }>;
+}
