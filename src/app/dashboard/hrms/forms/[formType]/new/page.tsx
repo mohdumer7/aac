@@ -215,12 +215,9 @@ export default function NewHRMSFormPage() {
             
             console.log('🔄 WORKFLOW: Advancing to step', nextStepIndex, nextStep);
             
-            // Force immediate navigation
-            console.log('🚀 WORKFLOW: Executing immediate redirect');
-            setTimeout(() => {
-              window.location.replace(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
-            }, 100); // Small delay to ensure all processing is complete
-            return; // Stop all further execution
+            // Update workflow context to track the correct step
+            workflow.navigateToStep(nextStepIndex);
+            return; // Stop all further execution - let the workflow context handle navigation
           } else {
             // Last step - redirect to workflows page
             console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
