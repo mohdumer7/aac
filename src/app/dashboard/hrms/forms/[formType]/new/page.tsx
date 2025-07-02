@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { useCreateFormMutation, useSaveDraftMutation } from '@/services/endpoints/hrmsApi';
-import { useGetDepartmentsQuery, useGetAvailableApproversQuery, useGetCountriesQuery } from '@/services/endpoints/hrmsApi';
+import { useGetDepartmentsQuery, useGetAvailableApproversQuery, useGetCountriesQuery, useGetRolesQuery, useGetOrganizationsQuery, useGetLocationsQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormConfig } from '@/types/hrms';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 
