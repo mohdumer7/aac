@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { useCreateFormMutation, useSaveDraftMutation } from '@/services/endpoints/hrmsApi';
-import { useGetDepartmentsQuery, useGetAvailableApproversQuery } from '@/services/endpoints/hrmsApi';
+import { useGetDepartmentsQuery, useGetAvailableApproversQuery, useGetCountriesQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormConfig } from '@/types/hrms';
 
 export default function NewHRMSFormPage() {
