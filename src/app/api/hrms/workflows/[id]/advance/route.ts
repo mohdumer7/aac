@@ -3,10 +3,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/configs/authOptions';
 import HRMSWorkflowManager from '@/server/managers/hrmsWorkflowManager';
 
-// POST /api/hrms/workflows/[id]/advance - Advance workflow to next step
+// POST /api/hrms/workflows/[id]/advance
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,24 +17,24 @@ export async function POST(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
-    const { stepId, formData, comments, skipValidation } = body;
+    
+    const result = await HRMSWorkflowManager.advanceWorkflowStep(
+      id,
+      body,
+      session.user.id
+    );
 
-    const result = await HRMSWorkflowManager.advanceWorkflowStep({
-      workflowInstanceId: id,
-      stepId,
-      formData,
-      comments,
-      skipValidation,
-      userId: session.user.id
-    });
-
-    return NextResponse.json(result);
+    if (result.success) {
+      return NextResponse.json(result);
+    } else {
+      return NextResponse.json(result, { status: 400 });
+    }
   } catch (error: any) {
-    console.error('Error advancing workflow step:', error);
+    console.error(`Error advancing workflow:`, error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Internal server error' },
+      { success: false, message: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -7,7 +7,7 @@ import { HRMSFormTypes } from '@/models/hrms';
 // POST /api/hrms/forms/[formType]/[id]/submit
 export async function POST(
   request: NextRequest,
-  { params }: { params: { formType: string; id: string } }
+  { params }: { params: Promise<{ formType: string; id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,8 +18,10 @@ export async function POST(
       );
     }
 
+    const { formType, id } = await params;
+
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -27,8 +29,8 @@ export async function POST(
     }
 
     const result = await HRMSManager.submitForm(
-      params.formType,
-      params.id,
+      formType,
+      id,
       session.user.id
     );
 
@@ -38,7 +40,7 @@ export async function POST(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error submitting ${params.formType}:`, error);
+    console.error(`Error submitting form:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
