@@ -126,7 +126,7 @@ export default function NewHRMSFormPage() {
   }, [formType, router, departmentsData, approversData, countriesData]);
 
   const handleSaveDraft = async (data: any) => {
-    console.log('🟡 DRAFT SAVE: handleSaveDraft called', { formId, formType });
+    console.log('🟡 DRAFT SAVE: handleSaveDraft called', { formId, formType, isWorkflow });
     try {
       let result;
       if (formId) {
@@ -143,9 +143,14 @@ export default function NewHRMSFormPage() {
           window.history.replaceState(
             {},
             '',
-            `/dashboard/hrms/forms/${formType}/${result.data._id}/edit`
+            `/dashboard/hrms/forms/${formType}/${result.data._id}/edit${isWorkflow ? '?workflow=true' : ''}`
           );
         }
+      }
+      
+      // Update workflow data if in workflow mode
+      if (isWorkflow && result?.success) {
+        updateStepData(currentStepIndex, result.data._id, data);
       }
       
       console.log('🟡 DRAFT SAVE: Completed successfully', result);
