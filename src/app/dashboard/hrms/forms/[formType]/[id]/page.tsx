@@ -127,10 +127,16 @@ export default function HRMSFormViewPage() {
                 </Link>
               )}
               
-              <Button size="sm" variant="outline">
-                <PrinterIcon className="h-4 w-4 mr-2" />
-                Print
-              </Button>
+              <PDFGenerator
+                formType={formType}
+                formId={formId}
+                triggerButton={
+                  <Button size="sm" variant="outline">
+                    <FileTextIcon className="h-4 w-4 mr-2" />
+                    Generate PDF
+                  </Button>
+                }
+              />
               
               <Button size="sm" variant="outline">
                 <ShareIcon className="h-4 w-4 mr-2" />
