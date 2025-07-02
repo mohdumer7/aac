@@ -78,6 +78,11 @@ export default function HRMSFormContainer({
       
       const subscription = watch((value, { name, type }) => {
         if (type === 'change' && onSaveDraft && isDraft && isDirty) {
+          console.log('⏰ AUTO-SAVE: Field changed, scheduling auto-save', { field: name });
+          
+          // Explicitly prevent form submission during auto-save
+          setIsManualSubmit(false);
+          
           // Clear previous timeout
           if (timeoutId) {
             clearTimeout(timeoutId);
@@ -85,6 +90,7 @@ export default function HRMSFormContainer({
           
           // Set new timeout for auto-save
           timeoutId = setTimeout(() => {
+            console.log('⏰ AUTO-SAVE: Executing auto-save');
             handleSaveDraft(value);
           }, 3000); // Increased to 3 seconds to reduce frequency
         }
