@@ -37,24 +37,17 @@ export default function NewHRMSFormPage() {
   const [createForm, { isLoading }] = useCreateFormMutation();
   const [saveDraft] = useSaveDraftMutation();
   
-  // Sync workflow context with current form type
+  // Debug: Log workflow state when component loads
   useEffect(() => {
-    if (isWorkflow && formType && workflow.steps.length > 0) {
-      const stepIndex = workflow.steps.findIndex(step => step.formType === formType);
-      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        console.log('🔄 WORKFLOW: Current step index mismatch detected', { 
-          formType, 
-          expectedStepIndex: stepIndex,
-          currentStepIndex: currentStepIndex,
-          allSteps: workflow.steps.map(s => ({ index: s.stepIndex, formType: s.formType }))
-        });
-        
-        // The workflow context needs to be updated, but we can't use navigateToStep here
-        // as it would cause a redirect loop. The issue is that the workflow advancement
-        // logic in handleSubmit needs to be fixed instead.
-      }
+    if (isWorkflow) {
+      console.log('📋 WORKFLOW: Form page loaded', { 
+        formType, 
+        currentStepIndex,
+        totalSteps: workflow.steps.length,
+        expectedFormType: workflow.steps[currentStepIndex]?.formType
+      });
     }
-  }, [isWorkflow, formType, workflow.steps.length, currentStepIndex]);
+  }, [isWorkflow, formType, currentStepIndex, workflow.steps.length]);
 
   // Get prefill data from previous workflow steps
   const getInitialFormData = () => {
