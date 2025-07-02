@@ -204,6 +204,9 @@ export default function NewHRMSFormPage() {
             const nextStepIndex = currentStepIndex + 1;
             const nextStep = workflow.steps[nextStepIndex];
             
+            // Update the current step in workflow context
+            workflow.setCurrentStepIndex(nextStepIndex);
+            
             // Force navigation to next step (always create new form, never edit)
             router.push(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
             return; // Important: Stop execution here
