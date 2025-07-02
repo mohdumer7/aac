@@ -47,7 +47,7 @@ export async function GET(
 // PUT /api/hrms/forms/[formType]/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { formType: string; id: string } }
+  { params }: { params: Promise<{ formType: string; id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -58,8 +58,10 @@ export async function PUT(
       );
     }
 
+    const { formType, id } = await params;
+
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -69,8 +71,8 @@ export async function PUT(
     const body = await request.json();
     
     const result = await HRMSManager.updateForm(
-      params.formType,
-      params.id,
+      formType,
+      id,
       body,
       session.user.id
     );
@@ -81,7 +83,7 @@ export async function PUT(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error updating ${params.formType}:`, error);
+    console.error(`Error updating form:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
