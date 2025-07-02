@@ -459,6 +459,8 @@ export const {
   useGetAvailableApproversQuery,
   useGetDepartmentsQuery,
   useGetRolesQuery,
+  useGetUsersQuery,
+  useGetCountriesQuery,
 
   // Approval Instances
   useGetApprovalInstancesQuery,
