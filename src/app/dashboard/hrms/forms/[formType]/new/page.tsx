@@ -115,9 +115,9 @@ export default function NewHRMSFormPage() {
         }).unwrap();
       }
       
-      // Only proceed with workflow logic if this was an actual form submission (not draft save)
-      if (result.success && data.isDraft === false) {
-        toast.success('Form submitted successfully!');
+      // Only proceed with workflow logic if this was successful
+      if (result.success) {
+        // NOTE: Don't show toast here - HRMSFormContainer already shows it
         
         // Check if this is part of a workflow
         const workflowData = sessionStorage.getItem('workflowData');
