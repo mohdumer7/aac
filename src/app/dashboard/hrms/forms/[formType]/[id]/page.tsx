@@ -23,6 +23,7 @@ import Link from 'next/link';
 import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
 import HRMSStatusBadge from '@/components/hrms/HRMSStatusBadge';
+import PDFGenerator from '@/components/hrms/PDFGenerator';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { useGetFormByIdQuery, useGetApprovalInstancesQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormConfig } from '@/types/hrms';
