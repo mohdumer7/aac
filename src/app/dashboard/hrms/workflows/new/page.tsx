@@ -175,21 +175,21 @@ export default function NewWorkflowPage() {
             {selectedTemplate === 'recruitment' && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="candidateName">Candidate Name</Label>
+                  <Label htmlFor="requestedBy">Requested By (HR/Manager)</Label>
                   <Input
-                    id="candidateName"
-                    value={workflowData.candidateName}
-                    onChange={(e) => setWorkflowData({ ...workflowData, candidateName: e.target.value })}
-                    placeholder="Enter candidate name"
+                    id="requestedBy"
+                    value={workflowData.requestedBy || ''}
+                    onChange={(e) => setWorkflowData({ ...workflowData, requestedBy: e.target.value })}
+                    placeholder="Enter name of person requesting"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="position">Position</Label>
+                  <Label htmlFor="position">Position Required</Label>
                   <Input
                     id="position"
                     value={workflowData.position}
                     onChange={(e) => setWorkflowData({ ...workflowData, position: e.target.value })}
-                    placeholder="Enter position title"
+                    placeholder="Enter position title needed"
                   />
                 </div>
               </>
