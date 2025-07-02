@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import { HRMSFormTypes } from '@/types/hrms';
 import { HRMS_WORKFLOW_TEMPLATES } from '@/types/workflow';
 import { useGetDepartmentsQuery, useGetUsersQuery } from '@/services/endpoints/hrmsApi';
+import { useWorkflow } from '@/contexts/WorkflowContext';
 
 export default function NewWorkflowPage() {
   const router = useRouter();
