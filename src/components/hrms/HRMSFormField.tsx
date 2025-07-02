@@ -223,6 +223,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false
             }}
