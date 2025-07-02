@@ -19,6 +19,113 @@ import { useGetDepartmentsQuery, useGetAvailableApproversQuery, useGetCountriesQ
 import { HRMSFormConfig } from '@/types/hrms';
 import { useWorkflow } from '@/contexts/WorkflowContext';
 
+// Workflow Completion Dialog Component
+interface WorkflowCompletionDialogProps {
+  workflow: any;
+  onClose: () => void;
+}
+
+const WorkflowCompletionDialog: React.FC<WorkflowCompletionDialogProps> = ({ workflow, onClose }) => {
+  const completedForms = workflow.steps.filter((step: any) => step.formId);
+  
+  return (
+    <Dialog open={true} onOpenChange={() => onClose()}>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-green-600">
+            <CheckCircleIcon className="h-6 w-6" />
+            Workflow Completed Successfully!
+          </DialogTitle>
+          <DialogDescription>
+            Your {workflow.workflowType} workflow has been completed. You can now generate PDF documents for all submitted forms.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Workflow Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Workflow Summary</CardTitle>
+              <CardDescription>
+                {completedForms.length} of {workflow.steps.length} forms completed
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                {workflow.steps.map((step: any, index: number) => (
+                  <div key={step.stepIndex} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                        step.formId ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium">{step.stepName}</p>
+                        <p className="text-sm text-muted-foreground">{step.formType.replace(/_/g, ' ')}</p>
+                      </div>
+                    </div>
+                    {step.formId && (
+                      <PDFGenerator
+                        formType={step.formType}
+                        formId={step.formId}
+                        triggerButton={
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <FileTextIcon className="h-3 w-3" />
+                            PDF
+                          </Button>
+                        }
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Generate All PDFs */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DownloadIcon className="h-5 w-5" />
+                Bulk PDF Generation
+              </CardTitle>
+              <CardDescription>
+                Generate PDF documents for all completed forms at once
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full gap-2" 
+                onClick={() => {
+                  // Generate PDFs for all completed forms
+                  completedForms.forEach((step: any) => {
+                    // This would trigger PDF generation for each form
+                    console.log('Generating PDF for', step);
+                  });
+                }}
+              >
+                <DownloadIcon className="h-4 w-4" />
+                Generate All PDFs ({completedForms.length} files)
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button onClick={onClose}>
+              Go to Workflows Dashboard
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default function NewHRMSFormPage() {
   const params = useParams();
   const router = useRouter();
