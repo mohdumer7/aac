@@ -165,6 +165,12 @@ export default function NewHRMSFormPage() {
 
   const handleSubmit = async (data: any) => {
     console.log('🟢 FORM SUBMIT: handleSubmit called', { formId, formType, isWorkflow });
+    
+    // If in workflow mode, prevent any default navigation first
+    if (isWorkflow) {
+      console.log('🚫 WORKFLOW: Blocking any potential redirects');
+    }
+    
     try {
       let result;
       
@@ -187,6 +193,8 @@ export default function NewHRMSFormPage() {
         }).unwrap();
       }
       
+      console.log('🟢 FORM SUBMIT: API Result', result);
+      
       // Only proceed with workflow logic if this was successful
       if (result.success) {
         console.log('🟢 FORM SUBMIT: Form submitted successfully, checking workflow');
@@ -194,6 +202,8 @@ export default function NewHRMSFormPage() {
         // Check if this is part of a workflow - HANDLE IMMEDIATELY
         if (isWorkflow && workflow.steps.length > 0) {
           console.log('🟢 FORM SUBMIT: Workflow detected - immediate processing');
+          console.log('🔄 WORKFLOW: Current step index:', currentStepIndex);
+          console.log('🔄 WORKFLOW: Total steps:', workflow.steps.length);
           
           // Update current step data
           updateStepData(currentStepIndex, result.data._id, data);
@@ -205,24 +215,34 @@ export default function NewHRMSFormPage() {
             
             console.log('🔄 WORKFLOW: Advancing to step', nextStepIndex, nextStep);
             
-            // IMMEDIATE redirect - no delays, no other logic
-            window.location.href = `/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`;
+            // Force immediate navigation
+            console.log('🚀 WORKFLOW: Executing immediate redirect');
+            setTimeout(() => {
+              window.location.replace(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
+            }, 100); // Small delay to ensure all processing is complete
             return; // Stop all further execution
           } else {
             // Last step - redirect to workflows page
             console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
-            window.location.href = '/dashboard/hrms/workflows';
+            setTimeout(() => {
+              window.location.replace('/dashboard/hrms/workflows');
+            }, 100);
             return;
           }
+        } else {
+          console.log('🔍 WORKFLOW: Not in workflow mode or no steps', { isWorkflow, stepsLength: workflow.steps.length });
         }
         
         // Only if NOT in workflow mode
         if (!isWorkflow) {
+          console.log('📄 NON-WORKFLOW: Redirecting to view page');
           router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
         }
+      } else {
+        console.error('🔴 FORM SUBMIT: Form submission failed', result);
       }
     } catch (error: any) {
-      console.error('🔴 FORM SUBMIT: Failed', error);
+      console.error('🔴 FORM SUBMIT: Exception during submission', error);
       throw new Error(error.message || 'Failed to submit form');
     }
   };
