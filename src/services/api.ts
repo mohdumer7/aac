@@ -17,6 +17,6 @@ const baseQueryWithRetry = retry(
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithRetry,
-  tagTypes: ['User', 'Post', 'Comment', 'Master', 'Application', 'Email','Ticket','TicketCategory','TicketComment','TicketHistory','TicketTask','UserSkill', 'SmlFile', 'Notification', 'ApprovalFlow', 'Department', 'UserListForFlow'], // Define entity types for cache invalidation
+  tagTypes: ['User', 'Post', 'Comment', 'Master', 'Application', 'Email','Ticket','TicketCategory','TicketComment','TicketHistory','TicketTask','UserSkill', 'SmlFile', 'Notification', 'ApprovalFlow', 'Department', 'UserListForFlow', 'HRMS_Dashboard', 'HRMS_Form', 'HRMS_Config', 'HRMS_ApprovalFlow', 'HRMS_ApprovalInstance', 'HRMS_Workflow'], // Define entity types for cache invalidation
   endpoints: () => ({}), // We'll inject endpoints from other files
 })
