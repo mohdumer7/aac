@@ -201,7 +201,8 @@ export default function HRMSDashboardPage() {
                       </Link>
                       <Link href={`/dashboard/hrms/forms/${formType}`} className="flex-1">
                         <Button size="sm" variant="outline" className="w-full">
-                          View All
+                          <EyeIcon className="h-3 w-3 mr-1" />
+                          View
                         </Button>
                       </Link>
                     </div>
@@ -218,21 +219,14 @@ export default function HRMSDashboardPage() {
             <CardHeader>
               <CardTitle>Pending Approvals</CardTitle>
               <CardDescription>
-                Forms requiring your approval or review
+                Forms waiting for your approval
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
-                <ClockIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Pending Approvals</h3>
-                <p className="text-muted-foreground mb-4">
-                  All approval items have been processed
-                </p>
-                <Link href="/dashboard/hrms/approvals">
-                  <Button variant="outline">
-                    View All Approvals
-                  </Button>
-                </Link>
+                <ClockIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Pending Approvals</h3>
+                <p className="text-gray-600">When forms require your approval, they will appear here.</p>
               </div>
             </CardContent>
           </Card>
@@ -240,21 +234,65 @@ export default function HRMSDashboardPage() {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUpIcon className="h-5 w-5" />
-                  Form Submission Trends
-                </CardTitle>
+                <CardTitle>Workflow Analytics</CardTitle>
+                <CardDescription>Track workflow progress and completion times</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(formStats).map(([formType, stats]: [string, any]) => {
-                    const config = HRMS_FORM_CONFIG[formType];
-                    const approvalRate = stats.total > 0 
-                      ? Math.round((stats.approved / (stats.approved + stats.rejected)) * 100) || 0
-                      : 0;
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Active Workflows:</span>
+                    <Badge variant="outline">3</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Completed This Month:</span>
+                    <Badge variant="outline">12</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Average Completion Time:</span>
+                    <Badge variant="outline">7 days</Badge>
+                  </div>
+                  <Link href="/dashboard/hrms/workflows" className="block">
+                    <Button className="w-full">
+                      <WorkflowIcon className="h-4 w-4 mr-2" />
+                      View All Workflows
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Common HR workflow actions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Link href="/dashboard/hrms/workflows/new?template=recruitment">
+                    <Button variant="outline" className="w-full justify-start">
+                      <UserIcon className="h-4 w-4 mr-2" />
+                      Start Recruitment Process
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/hrms/workflows/new?template=onboarding">
+                    <Button variant="outline" className="w-full justify-start">
+                      <CheckCircleIcon className="h-4 w-4 mr-2" />
+                      Begin Employee Onboarding
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/hrms/approval-flows">
+                    <Button variant="outline" className="w-full justify-start">
+                      <SettingsIcon className="h-4 w-4 mr-2" />
+                      Manage Approval Flows
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
                     return (
                       <div key={formType} className="flex items-center justify-between p-3 border rounded-lg">
