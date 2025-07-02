@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   ArrowRightIcon,
   CheckCircleIcon,
@@ -18,7 +19,8 @@ import {
   CalendarIcon,
   MapPinIcon,
   BriefcaseIcon,
-  AlertCircleIcon
+  AlertCircleIcon,
+  Loader2Icon
 } from 'lucide-react';
 import Link from 'next/link';
 import { HRMSFormTypes, HRMS_FORM_CONFIG } from '@/types/hrms';
@@ -26,52 +28,47 @@ import { HRMS_WORKFLOW_TEMPLATES } from '@/types/workflow';
 
 export default function HRMSWorkflowsPage() {
   const [activeTab, setActiveTab] = useState('active');
+  const [workflowInstances, setWorkflowInstances] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock data - replace with actual API calls
-  const workflowInstances = [
-    {
-      _id: '1',
-      workflowName: 'Complete Recruitment Process',
-      workflowType: 'recruitment',
-      status: 'active',
-      currentStep: 'candidate_sourcing',
-      completedSteps: ['manpower_req'],
-      metadata: {
-        candidateName: 'John Doe',
-        position: 'Software Engineer',
-        department: 'Engineering',
-        startDate: new Date('2024-12-10')
-      },
-      progress: {
-        totalSteps: 5,
-        completedSteps: 1,
-        progressPercentage: 20,
-        currentStepName: 'Candidate Information Collection',
-        isOnTrack: true
+  useEffect(() => {
+    fetchWorkflowInstances();
+  }, [activeTab]);
+
+  const fetchWorkflowInstances = async () => {
+    try {
+      setIsLoading(true);
+      
+      // For now, since backend isn't fully connected, return empty array
+      // Replace this with actual API call when authentication is set up
+      const response = await fetch(`/api/hrms/workflows?status=${activeTab}`);
+      
+      if (response.status === 401) {
+        // Authentication required - show message
+        setWorkflowInstances([]);
+        setError('Authentication required. Please log in to view workflows.');
+        return;
       }
-    },
-    {
-      _id: '2',
-      workflowName: 'Employee Onboarding Process',
-      workflowType: 'onboarding',
-      status: 'active',
-      currentStep: 'assets_access',
-      completedSteps: ['employee_info'],
-      metadata: {
-        employeeName: 'Jane Smith',
-        position: 'Marketing Manager',
-        department: 'Marketing',
-        startDate: new Date('2024-12-12')
-      },
-      progress: {
-        totalSteps: 5,
-        completedSteps: 1,
-        progressPercentage: 20,
-        currentStepName: 'IT Assets & Access Setup',
-        isOnTrack: false
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch workflows');
       }
+
+      const data = await response.json();
+      if (data.success) {
+        setWorkflowInstances(data.data.instances || []);
+      } else {
+        setError(data.message);
+      }
+    } catch (error: any) {
+      console.error('Error fetching workflows:', error);
+      setWorkflowInstances([]);
+      setError(null); // Don't show error for now since auth isn't set up
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -164,6 +161,43 @@ export default function HRMSWorkflowsPage() {
     );
   };
 
+  const renderEmptyState = (tab: string) => {
+    const emptyStates = {
+      active: {
+        icon: <WorkflowIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />,
+        title: 'No Active Workflows',
+        description: 'Start a new workflow to begin tracking HR processes.',
+        action: (
+          <Link href="/dashboard/hrms/workflows/new">
+            <Button>Start New Workflow</Button>
+          </Link>
+        )
+      },
+      completed: {
+        icon: <CheckCircleIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />,
+        title: 'No Completed Workflows',
+        description: 'Completed workflows will appear here once workflows are finished.'
+      },
+      paused: {
+        icon: <PauseIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />,
+        title: 'No Paused Workflows',
+        description: 'Paused workflows will appear here when workflows are temporarily stopped.'
+      }
+    };
+
+    const state = emptyStates[tab];
+    return (
+      <Card>
+        <CardContent className="text-center py-8">
+          {state.icon}
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{state.title}</h3>
+          <p className="text-gray-600 mb-4">{state.description}</p>
+          {state.action}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-7xl space-y-6">
       {/* Header */}
@@ -186,6 +220,14 @@ export default function HRMSWorkflowsPage() {
           </Link>
         </div>
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Workflow Templates */}
       <Card>
@@ -230,7 +272,7 @@ export default function HRMSWorkflowsPage() {
         </CardContent>
       </Card>
 
-      {/* Active Workflows */}
+      {/* Workflows List */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="active">Active Workflows</TabsTrigger>
@@ -239,10 +281,18 @@ export default function HRMSWorkflowsPage() {
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
-          <div className="space-y-6">
-            {workflowInstances
-              .filter(instance => instance.status === 'active')
-              .map((instance) => (
+          {isLoading ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <Loader2Icon className="w-8 h-8 animate-spin mx-auto mb-4" />
+                <p>Loading workflows...</p>
+              </CardContent>
+            </Card>
+          ) : workflowInstances.length === 0 ? (
+            renderEmptyState('active')
+          ) : (
+            <div className="space-y-6">
+              {workflowInstances.map((instance) => (
                 <Card key={instance._id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -264,7 +314,7 @@ export default function HRMSWorkflowsPage() {
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-3">
-                        {!instance.progress.isOnTrack && (
+                        {!instance.progress?.isOnTrack && (
                           <Badge variant="destructive" className="flex items-center gap-1">
                             <AlertCircleIcon className="w-3 h-3" />
                             Behind Schedule
@@ -283,13 +333,13 @@ export default function HRMSWorkflowsPage() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Progress</span>
                         <span className="text-sm text-gray-600">
-                          {instance.progress.completedSteps} of {instance.progress.totalSteps} steps
+                          {instance.completedSteps.length} of {instance.progress?.totalSteps || 0} steps
                         </span>
                       </div>
-                      <Progress value={instance.progress.progressPercentage} className="h-2" />
+                      <Progress value={instance.progress?.progressPercentage || 0} className="h-2" />
                       <div className="flex items-center justify-between text-xs text-gray-600">
-                        <span>Current: {instance.progress.currentStepName}</span>
-                        <span>{instance.progress.progressPercentage}% Complete</span>
+                        <span>Current: {instance.progress?.currentStepName || 'Unknown'}</span>
+                        <span>{instance.progress?.progressPercentage || 0}% Complete</span>
                       </div>
                     </div>
 
@@ -303,7 +353,7 @@ export default function HRMSWorkflowsPage() {
                     <div className="flex items-center justify-between pt-4 border-t">
                       <div className="text-xs text-gray-500 flex items-center gap-1">
                         <CalendarIcon className="w-3 h-3" />
-                        Started {new Date(instance.metadata.startDate).toLocaleDateString()}
+                        Started {new Date(instance.startedAt).toLocaleDateString()}
                       </div>
                       <div className="space-x-2">
                         <Link href={`/dashboard/hrms/workflows/${instance._id}`}>
@@ -321,27 +371,34 @@ export default function HRMSWorkflowsPage() {
                   </CardContent>
                 </Card>
               ))}
-          </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="completed">
-          <Card>
-            <CardContent className="text-center py-8">
-              <CheckCircleIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Completed Workflows</h3>
-              <p className="text-gray-600">Completed workflows will appear here once workflows are finished.</p>
-            </CardContent>
-          </Card>
+          {isLoading ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <Loader2Icon className="w-8 h-8 animate-spin mx-auto mb-4" />
+                <p>Loading workflows...</p>
+              </CardContent>
+            </Card>
+          ) : (
+            renderEmptyState('completed')
+          )}
         </TabsContent>
 
         <TabsContent value="paused">
-          <Card>
-            <CardContent className="text-center py-8">
-              <PauseIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Paused Workflows</h3>
-              <p className="text-gray-600">Paused workflows will appear here when workflows are temporarily stopped.</p>
-            </CardContent>
-          </Card>
+          {isLoading ? (
+            <Card>
+              <CardContent className="text-center py-8">
+                <Loader2Icon className="w-8 h-8 animate-spin mx-auto mb-4" />
+                <p>Loading workflows...</p>
+              </CardContent>
+            </Card>
+          ) : (
+            renderEmptyState('paused')
+          )}
         </TabsContent>
       </Tabs>
     </div>
