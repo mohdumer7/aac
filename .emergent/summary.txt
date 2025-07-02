@@ -1,84 +1,68 @@
 <analysis>
-The AI engineer successfully initiated and progressed the HRMS system development, moving from foundational models and APIs to extensive frontend implementation. The trajectory demonstrates an iterative development cycle, marked by initial feature delivery (HRMS forms, approval flows, PDF generation) followed by critical bug fixing and refinement based on direct user feedback. Key challenges included resolving client-side Mongoose imports, ensuring correct environment variable usage, addressing React controlled/uncontrolled component warnings, and, most recently, rectifying master data API 404 errors and RTK Query tag type duplication. The AI engineer consistently adapted to user input, prioritizing fixes for core functionality and data integrity, and is currently focused on enabling master data integration in the UI.
+The AI engineer's trajectory chronicles the evolution of an HRMS system from initial setup to addressing complex functional and UI bugs. Initially, the focus was on resolving foundational issues such as master data API 404 errors, RTK Query tag duplication, and React controlled/uncontrolled component warnings. A significant architectural shift involved identifying the application as a pure Next.js project, consolidating backend and frontend services under a single Next.js process. Subsequent efforts concentrated on refining the user experience for HR forms, specifically Manpower Requisition, by fixing intermediate save issues, improving input field handling, and meticulously isolating auto-save from manual submission. The trajectory culminates with the engineer actively working on ensuring seamless workflow continuity and navigation, particularly ensuring forms advance to the next step rather than defaulting to a view mode, indicating a move towards full workflow automation.
 </analysis>
 
 <product_requirements>
-The user requires a comprehensive HRMS application for Acero Building Systems to automate HR processes, replacing manual forms. The system must support:
-1.  **Core HR Forms**: Digitization and management of 9 specific HR forms (e.g., Manpower Requisition, Candidate Information, Employee Information) with all specified fields and drafting capabilities.
-2.  **Flexible Approval Flows**: A new, visual flow design system allowing dynamic approver assignments, conditional logic, parallel/sequential steps, and audit trails.
+The goal is to develop a comprehensive HRMS application for Acero Building Systems to automate HR processes and replace manual forms. Key requirements include:
+1.  **Core HR Forms**: Digitization and management of 9 specific HR forms (e.g., Manpower Requisition, Candidate Information, Employee Information) with drafting capabilities and all specified fields.
+2.  **Flexible Approval Flows**: A new, visual flow design system enabling dynamic approver assignments, conditional logic, parallel/sequential steps, and audit trails.
 3.  **PDF Generation**: Auto-generation of filled forms (PDFs) based on captured data, including approval history.
-4.  **Workflow Continuity**: Seamless progression of data and forms through a continuous workflow (e.g., Manpower Requisition leading to Candidate Information).
-5.  **Master Data Integration**: Utilization of existing master models (users, departments, organizations, locations) for data consistency and dropdown selections.
+4.  **Workflow Continuity**: Seamless progression of data and forms through a continuous workflow (e.g., Manpower Requisition leading to Candidate Information), with pre-filled and disabled fields for previous steps, and free navigation between steps.
+5.  **Master Data Integration**: Utilization of existing master models (users, departments, organizations, locations, countries) for data consistency and dropdown selections.
 6.  **Employee ID Generation**: Automatic generation of unique employee IDs if not provided.
-The application should leverage existing patterns like Mongoose models, manager classes, and RTK Query, built from scratch with robust authentication.
+7.  **Draft Management**: Ability to save and view draft workflows and forms, ensuring no data loss, with proper debouncing for auto-saves.
 </product_requirements>
 
 <key_technical_concepts>
--   **Full-Stack Development**: React (Next.js) frontend, FastAPI backend, MongoDB database.
--   **Data Persistence**: Mongoose for MongoDB schema definition.
+-   **Full-Stack Development**: React (Next.js App Router) frontend and API routes, MongoDB database.
+-   **Data Persistence**: Mongoose for MongoDB schema definition and ODM.
 -   **API Integration**: RTK Query for frontend-backend communication.
--   **Backend Logic**: Manager classes encapsulating business logic.
--   **Workflow Automation**: Custom approval and workflow engine.
+-   **Backend Logic**: Manager classes encapsulating business logic,  for database interactions.
+-   **Workflow Automation**: Custom approval and workflow engine, .
 -   **Type Safety**: Extensive use of TypeScript.
--   **UI Framework**: Tailwind CSS.
+-   **UI Framework**: Tailwind CSS, Shadcn/ui components.
 -   **Visual Flow Designer**: React Flow for node-based diagrams.
--   **PDF Generation**: jsPDF and html2canvas for client-side document creation.
+-   **PDF Generation**: jsPDF and html2canvas.
 </key_technical_concepts>
 
 <code_architecture>
-The application utilizes a monorepo-like structure within the  directory, separating frontend (React/Next.js) and backend (FastAPI) concerns. MongoDB serves as the persistent data layer.
+The application employs a monorepo-like structure within , with a Next.js application serving both frontend and API routes, and MongoDB as the database.
+
 
 
 **Key Files and Changes:**
-
--   : Contains Mongoose schemas and models for HRMS forms, approval flows, and now . All models were modified to correctly export using  to prevent client-side import issues.
--   : Manages HRMS form data and now supports integration with workflow logic.
--   : Manages approval flow logic.
--   : **New File**. Implements the core business logic for handling HRMS workflow instances, including creation, advancement, and status tracking.
--   : Contains Next.js API routes. New subdirectories for  (, , ) were added for workflow management. PDF generation endpoint () was added, and an approval flow design endpoint () was created.
--   : Defines RTK Query API slice for HRMS. Updated with new endpoints for workflow management and master data fetching (e.g., , ). Tag types like , , , , ,  were added to .
--   : **Modified**. Now exports client-safe TypeScript interfaces and types for HRMS, separated from Mongoose models to avoid server-side imports on the client.
--   : **New File**. Defines TypeScript interfaces for workflow-related data structures.
--   : Root for HRMS frontend module.
-    -   : Main HRMS dashboard, updated to include workflow link.
-    -   : Defines HRMS section layout, updated to include workflows in navigation.
-    -   : Modified to integrate the  component.
-    -   : **New Page**. Dedicated page for the visual approval flow designer.
-    -   : **New Page**. Main workflows list, updated to remove mock data and use real API calls.
-    -   : **New Page**. For starting new HRMS workflows, updated to use master data for Requesting Person and Department.
-    -   : **New Page**. For viewing workflow details.
--   : Reusable React components.
-    -   : **New Component**. Implements the node-based visual approval flow designer using React Flow.
-    -   : **New Component**. Handles PDF generation on the client side.
-    -   : Modified to include a PDF generation button and improved handling of form data to prevent controlled/uncontrolled input issues.
-    -   : Modified to handle undefined values and controlled inputs better.
--   : Contains form metadata.
--   : **New File**. Defines types and APIs for master data (e.g., departments, users).
--   : **New File**. Stores environment variables including  for MongoDB Atlas connection and Azure AD credentials.
+-   : Fixed duplicate index definition for .
+-   : Status enum updated to accept valid workflow states (e.g., ).
+-   : Modified  and  to skip validation when  is true, ensuring draft saves don't block. Ensured  import.
+-   , , : Updated to  for Next.js 15 compatibility and  endpoint created.
+-   , , , , , : Newly created API routes for specific master data types.
+-   : Added  and other master data queries, removed duplicate exports for , etc.
+-   : New context for managing and sharing workflow state across components.
+-   : New component providing a visually enhanced workflow progress UI.
+-   : New reusable UI component for searchable dropdowns.
+-   : Refined auto-save debouncing logic (10s delay after typing stops), implemented  flag to prevent auto-save from triggering form submissions, added manual Save Draft button.
+-   : Fixed  logic for number fields to handle empty strings correctly, ensured proper default values for all controlled inputs.
+-   : Integrated  and added link to the new drafts page.
+-   : Fixed a syntax error (stray  statement) and updated icon imports.
+-   : Integrated ,  for pre-filling and disabling fields, and the new  component for master data selections. Updated  and  to work with the new workflow context.
+-   : New page to list and manage all saved draft forms.
+-   : Modified to run a single  service, consolidating frontend and Next.js API routes, removing separate  and  services.
 </code_architecture>
 
 <pending_tasks>
--   Full implementation and refinement of PDF templates to accurately display comprehensive form data and approval history. (User feedback indicated pdf shows nothing no info)
--   Further refinement of the Visual Flow Designer UI to ensure all functionalities (e.g., saving complex flow designs) are robust. (User feedback indicated approval flow is not correct at all)
+-   Full implementation and refinement of PDF templates to accurately display comprehensive form data and approval history.
+-   Further refinement of the Visual Flow Designer UI to ensure all functionalities are robust.
 -   Implementation of automatic employee ID generation, ensuring uniqueness.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was addressing critical issues identified by the user:
+Immediately before this summary, the AI engineer was addressing the critical issue of workflow continuation. The user reported that after submitting the first form (e.g., Manpower Requisition), instead of advancing to the next logical step in the workflow (e.g., Candidate Information Collection), the system was redirecting to a view page of the submitted form. This prevents the seamless progression of data and forms through the defined workflow.
 
-1.  **Master Data Fetching Error (404 Not Found)**: The user reported  and similar errors for users. This indicates the frontend is trying to fetch master data (departments, users) from API endpoints that either do not exist or are incorrectly configured on the backend. This directly impacts the Start New Workflow page (), where dropdowns for Requested By (users) and Department (departments) are not populated.
-    *   The AI engineer had previously *added* master data APIs to RTK Query () and updated the  page to use them. However, the 404 error indicates the *backend endpoints* for these master data types are missing or misconfigured.
+The AI engineer diagnosed the problem as likely related to the workflow context not being properly initialized or the navigation logic incorrectly executing. Specifically, it was identified that  was storing workflow data in a format inconsistent with what the  expected. The form page was attempting to access , but the context wasn't being set up correctly with the workflow template data upon initiation.
 
-2.  **RTK Query Tag Type Duplication**: The user observed  and similar warnings for other HRMS tag types. The AI engineer fixed this by adding the missing tag types () to the base RTK Query API configuration in .
-
-3.  **React Controlled/Uncontrolled Input Warning**: The warning  indicated issues with form fields. The AI engineer addressed this by updating  and  to ensure proper initialization of form fields with default empty strings () instead of , and to correctly bind values using  to prevent state transitions from uncontrolled to controlled.
-
-4.  **Workflow Logic and Missing Pages**: The AI engineer had previously implemented  and  pages, removed mock data, and updated the workflow to start with Requested By for Complete Recruitment Process. PDF generation was also improved to show actual data.
-
-The AI engineer's last action was to investigate how master data is fetched in other parts of the codebase to resolve the persistent 404 errors for master data endpoints, indicating that the immediate focus is on making the master data dropdowns functional.
-
+The work being done aimed to update  and the  function within it. The objective is to ensure that when a new workflow is initiated, the  is correctly populated with the chosen workflow template's structure, including its defined steps. This correct initialization is crucial for the subsequent navigation logic to identify the next step and redirect the user accordingly, rather than to a static view of the current form. The last action was to fix the form submission logic to prevent the automatic redirection to the view page when in workflow mode, signifying a direct effort to ensure smooth workflow progression.
 </current_work>
 
 <optional_next_step>
-The next step is to investigate and implement the missing backend API endpoints for master data (departments, users, organizations, locations) and resolve the  build error.
+Ensure form submission in workflow mode correctly navigates to the next step instead of the view page.
 </optional_next_step>
