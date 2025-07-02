@@ -717,6 +717,527 @@ export const HRMS_FORM_CONFIGS: Record<string, HRMSFormConfig> = {
         ]
       }
     ]
+  },
+
+  // === Employee Information Form ===
+  [HRMSFormTypes.EMPLOYEE_INFORMATION]: {
+    formType: HRMSFormTypes.EMPLOYEE_INFORMATION,
+    title: 'Employee Information Form',
+    description: 'Comprehensive employee information and details',
+    submitLabel: 'Submit Information',
+    saveDraftLabel: 'Save Draft',
+    sections: [
+      {
+        id: 'basic_info',
+        title: 'Basic Information',
+        description: 'Essential employee details',
+        fields: [
+          {
+            name: 'empName',
+            type: 'text',
+            label: 'Employee Name',
+            required: true,
+            placeholder: 'Full name of the employee'
+          },
+          {
+            name: 'empId',
+            type: 'text',
+            label: 'Employee ID',
+            required: true,
+            placeholder: 'Employee identification number'
+          },
+          {
+            name: 'designation',
+            type: 'select',
+            label: 'Designation',
+            required: true,
+            options: []
+          },
+          {
+            name: 'grade',
+            type: 'text',
+            label: 'Grade',
+            placeholder: 'Employee grade/level'
+          },
+          {
+            name: 'department',
+            type: 'select',
+            label: 'Department',
+            required: true,
+            options: []
+          },
+          {
+            name: 'location',
+            type: 'select',
+            label: 'Location',
+            required: true,
+            options: []
+          },
+          {
+            name: 'dateOfJoining',
+            type: 'date',
+            label: 'Date of Joining',
+            required: true
+          },
+          {
+            name: 'dateOfBirth',
+            type: 'date',
+            label: 'Date of Birth',
+            required: true
+          },
+          {
+            name: 'category',
+            type: 'radio',
+            label: 'Category',
+            required: true,
+            options: [
+              { label: 'Management', value: 'management' },
+              { label: 'Manager', value: 'manager' },
+              { label: 'Staff', value: 'staff' },
+              { label: 'Worker', value: 'worker' }
+            ]
+          },
+          {
+            name: 'gender',
+            type: 'radio',
+            label: 'Gender',
+            required: true,
+            options: [
+              { label: 'Male', value: 'male' },
+              { label: 'Female', value: 'female' }
+            ]
+          },
+          {
+            name: 'nationality',
+            type: 'select',
+            label: 'Nationality',
+            required: true,
+            options: []
+          },
+          {
+            name: 'religion',
+            type: 'text',
+            label: 'Religion',
+            placeholder: 'Employee religion'
+          },
+          {
+            name: 'bloodGroup',
+            type: 'text',
+            label: 'Blood Group',
+            placeholder: 'e.g., A+, B-, O+'
+          },
+          {
+            name: 'maritalStatus',
+            type: 'radio',
+            label: 'Marital Status',
+            required: true,
+            options: [
+              { label: 'Single', value: 'single' },
+              { label: 'Married', value: 'married' }
+            ]
+          },
+          {
+            name: 'homeTown',
+            type: 'text',
+            label: 'Home Town',
+            placeholder: 'Employee home town'
+          },
+          {
+            name: 'airportName',
+            type: 'text',
+            label: 'Nearest Airport',
+            placeholder: 'Nearest international airport'
+          }
+        ]
+      },
+      {
+        id: 'family_details',
+        title: 'Family Details',
+        description: 'Information about family members',
+        fields: [
+          {
+            name: 'familyDetails.fatherName',
+            type: 'text',
+            label: "Father's Name",
+            placeholder: "Enter father's full name"
+          },
+          {
+            name: 'familyDetails.fatherNationality',
+            type: 'select',
+            label: "Father's Nationality",
+            options: []
+          },
+          {
+            name: 'familyDetails.motherName',
+            type: 'text',
+            label: "Mother's Name",
+            placeholder: "Enter mother's full name"
+          },
+          {
+            name: 'familyDetails.motherNationality',
+            type: 'select',
+            label: "Mother's Nationality",
+            options: []
+          },
+          {
+            name: 'familyDetails.spouseName',
+            type: 'text',
+            label: "Spouse's Name",
+            placeholder: "Enter spouse name if married",
+            showIf: (values) => values.maritalStatus === 'married'
+          },
+          {
+            name: 'familyDetails.spouseNationality',
+            type: 'select',
+            label: "Spouse's Nationality",
+            options: [],
+            showIf: (values) => values.maritalStatus === 'married'
+          }
+        ]
+      },
+      {
+        id: 'contact_info',
+        title: 'Contact Information',
+        description: 'Contact details and addresses',
+        fields: [
+          {
+            name: 'contacts.contactAddressUAE',
+            type: 'textarea',
+            label: 'Contact Address (UAE)',
+            placeholder: 'Current address in UAE'
+          },
+          {
+            name: 'contacts.phoneNumbersUAE',
+            type: 'tel',
+            label: 'Phone Number (UAE)',
+            placeholder: '+971-XX-XXXXXXX'
+          },
+          {
+            name: 'contacts.contactAddressHomeCountry',
+            type: 'textarea',
+            label: 'Contact Address (Home Country)',
+            placeholder: 'Address in home country'
+          },
+          {
+            name: 'contacts.phoneNumbersHomeCountry',
+            type: 'tel',
+            label: 'Phone Number (Home Country)',
+            placeholder: 'Include country code'
+          },
+          {
+            name: 'contacts.emailId',
+            type: 'email',
+            label: 'Email Address',
+            placeholder: 'employee.email@company.com'
+          },
+          {
+            name: 'contacts.emergencyContactNumbers',
+            type: 'tel',
+            label: 'Emergency Contact Numbers',
+            placeholder: 'Emergency contact numbers'
+          }
+        ]
+      }
+    ]
+  },
+
+  // === Accommodation/Transport Consent Form ===
+  [HRMSFormTypes.ACCOMMODATION_TRANSPORT_CONSENT]: {
+    formType: HRMSFormTypes.ACCOMMODATION_TRANSPORT_CONSENT,
+    title: 'Accommodation/Transportation Consent Form',
+    description: 'Employee consent for accommodation and transportation',
+    submitLabel: 'Submit Consent',
+    saveDraftLabel: 'Save Draft',
+    sections: [
+      {
+        id: 'employee_details',
+        title: 'Employee Details',
+        description: 'Basic employee information',
+        fields: [
+          {
+            name: 'empName',
+            type: 'text',
+            label: 'Employee Name',
+            required: true,
+            placeholder: 'Full name of the employee'
+          },
+          {
+            name: 'empId',
+            type: 'text',
+            label: 'Employee ID',
+            required: true,
+            placeholder: 'Employee identification number'
+          },
+          {
+            name: 'designation',
+            type: 'select',
+            label: 'Designation',
+            required: true,
+            options: []
+          },
+          {
+            name: 'department',
+            type: 'select',
+            label: 'Department',
+            required: true,
+            options: []
+          },
+          {
+            name: 'dateOfJoining',
+            type: 'date',
+            label: 'Date of Joining',
+            required: true
+          }
+        ]
+      },
+      {
+        id: 'accommodation_options',
+        title: 'Accommodation Options',
+        description: 'Choose your accommodation preference',
+        fields: [
+          {
+            name: 'accommodationPreference',
+            type: 'radio',
+            label: 'Accommodation Preference',
+            required: true,
+            options: [
+              { label: 'Company Provided Accommodation', value: 'company_provided' },
+              { label: 'Own Accommodation', value: 'own_accommodation' }
+            ]
+          },
+          {
+            name: 'accommodationDetails',
+            type: 'textarea',
+            label: 'Accommodation Details',
+            placeholder: 'Provide details about your accommodation choice',
+            showIf: (values) => values.accommodationPreference
+          }
+        ]
+      },
+      {
+        id: 'transportation_options',
+        title: 'Transportation Options',
+        description: 'Choose your transportation preference',
+        fields: [
+          {
+            name: 'transportationPreference',
+            type: 'radio',
+            label: 'Transportation Preference',
+            required: true,
+            options: [
+              { label: 'Company Provided Transportation', value: 'company_provided' },
+              { label: 'Own Transportation', value: 'own_transportation' }
+            ]
+          },
+          {
+            name: 'transportationDetails',
+            type: 'textarea',
+            label: 'Transportation Details',
+            placeholder: 'Provide details about your transportation choice',
+            showIf: (values) => values.transportationPreference
+          }
+        ]
+      },
+      {
+        id: 'consent_declaration',
+        title: 'Consent & Declaration',
+        description: 'Employee consent and declarations',
+        fields: [
+          {
+            name: 'consentGiven',
+            type: 'checkbox',
+            label: 'I hereby give my consent for the above selections',
+            required: true
+          },
+          {
+            name: 'declarationDate',
+            type: 'date',
+            label: 'Declaration Date',
+            required: true,
+            defaultValue: new Date().toISOString()
+          },
+          {
+            name: 'employeeSignature',
+            type: 'text',
+            label: 'Employee Signature',
+            placeholder: 'Type your full name as signature',
+            required: true
+          }
+        ]
+      }
+    ]
+  },
+
+  // === Beneficiary Declaration Form ===
+  [HRMSFormTypes.BENEFICIARY_DECLARATION]: {
+    formType: HRMSFormTypes.BENEFICIARY_DECLARATION,
+    title: 'Beneficiary Declaration Form',
+    description: 'Declaration of beneficiaries for employee benefits',
+    submitLabel: 'Submit Declaration',
+    saveDraftLabel: 'Save Draft',
+    sections: [
+      {
+        id: 'employee_info',
+        title: 'Employee Information',
+        description: 'Basic employee details',
+        fields: [
+          {
+            name: 'empName',
+            type: 'text',
+            label: 'Employee Name',
+            required: true,
+            placeholder: 'Full name of the employee'
+          },
+          {
+            name: 'empId',
+            type: 'text',
+            label: 'Employee ID',
+            required: true,
+            placeholder: 'Employee identification number'
+          },
+          {
+            name: 'designation',
+            type: 'select',
+            label: 'Designation',
+            required: true,
+            options: []
+          },
+          {
+            name: 'department',
+            type: 'select',
+            label: 'Department',
+            required: true,
+            options: []
+          },
+          {
+            name: 'dateOfJoining',
+            type: 'date',
+            label: 'Date of Joining',
+            required: true
+          }
+        ]
+      },
+      {
+        id: 'beneficiary_details',
+        title: 'Beneficiary Details',
+        description: 'Information about your beneficiaries',
+        fields: [
+          {
+            name: 'primaryBeneficiary.name',
+            type: 'text',
+            label: 'Primary Beneficiary Name',
+            required: true,
+            placeholder: 'Full name of primary beneficiary'
+          },
+          {
+            name: 'primaryBeneficiary.relationship',
+            type: 'select',
+            label: 'Relationship',
+            required: true,
+            options: [
+              { label: 'Spouse', value: 'spouse' },
+              { label: 'Father', value: 'father' },
+              { label: 'Mother', value: 'mother' },
+              { label: 'Son', value: 'son' },
+              { label: 'Daughter', value: 'daughter' },
+              { label: 'Brother', value: 'brother' },
+              { label: 'Sister', value: 'sister' },
+              { label: 'Other', value: 'other' }
+            ]
+          },
+          {
+            name: 'primaryBeneficiary.percentage',
+            type: 'number',
+            label: 'Percentage (%)',
+            required: true,
+            validation: { min: 1, max: 100 },
+            defaultValue: 100
+          },
+          {
+            name: 'primaryBeneficiary.contactDetails',
+            type: 'textarea',
+            label: 'Contact Details',
+            required: true,
+            placeholder: 'Address and phone number of beneficiary'
+          }
+        ]
+      },
+      {
+        id: 'secondary_beneficiary',
+        title: 'Secondary Beneficiary (Optional)',
+        description: 'Additional beneficiary information',
+        collapsible: true,
+        defaultExpanded: false,
+        fields: [
+          {
+            name: 'secondaryBeneficiary.name',
+            type: 'text',
+            label: 'Secondary Beneficiary Name',
+            placeholder: 'Full name of secondary beneficiary'
+          },
+          {
+            name: 'secondaryBeneficiary.relationship',
+            type: 'select',
+            label: 'Relationship',
+            options: [
+              { label: 'Spouse', value: 'spouse' },
+              { label: 'Father', value: 'father' },
+              { label: 'Mother', value: 'mother' },
+              { label: 'Son', value: 'son' },
+              { label: 'Daughter', value: 'daughter' },
+              { label: 'Brother', value: 'brother' },
+              { label: 'Sister', value: 'sister' },
+              { label: 'Other', value: 'other' }
+            ]
+          },
+          {
+            name: 'secondaryBeneficiary.percentage',
+            type: 'number',
+            label: 'Percentage (%)',
+            validation: { min: 1, max: 100 }
+          },
+          {
+            name: 'secondaryBeneficiary.contactDetails',
+            type: 'textarea',
+            label: 'Contact Details',
+            placeholder: 'Address and phone number of beneficiary'
+          }
+        ]
+      },
+      {
+        id: 'declaration',
+        title: 'Declaration',
+        description: 'Employee declaration and consent',
+        fields: [
+          {
+            name: 'declarationStatement',
+            type: 'checkbox',
+            label: 'I declare that the information provided above is true and accurate',
+            required: true
+          },
+          {
+            name: 'changeNotification',
+            type: 'checkbox',
+            label: 'I understand that I must notify HR of any changes to beneficiary information',
+            required: true
+          },
+          {
+            name: 'declarationDate',
+            type: 'date',
+            label: 'Declaration Date',
+            required: true,
+            defaultValue: new Date().toISOString()
+          },
+          {
+            name: 'employeeSignature',
+            type: 'text',
+            label: 'Employee Signature',
+            placeholder: 'Type your full name as signature',
+            required: true
+          }
+        ]
+      }
+    ]
   }
 };
 
