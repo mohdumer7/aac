@@ -23,6 +23,7 @@ import Link from 'next/link';
 import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
 import HRMSStatusBadge from '@/components/hrms/HRMSStatusBadge';
+import PDFGenerator from '@/components/hrms/PDFGenerator';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { useGetFormByIdQuery, useGetApprovalInstancesQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormConfig } from '@/types/hrms';
@@ -97,8 +98,25 @@ export default function HRMSFormViewPage() {
     );
   }
 
-  const form = formData.data;
+  const rawForm = formData.data;
   const approvalInstance = approvalData?.data?.instances?.[0];
+  
+  // Preprocess form data to convert complex objects to simple values to prevent React rendering errors
+  const form = {
+    ...rawForm,
+    // Convert requestedBy from object to ID if it's an object
+    requestedBy: typeof rawForm.requestedBy === 'object' && rawForm.requestedBy?._id 
+      ? rawForm.requestedBy._id 
+      : rawForm.requestedBy,
+    // Convert department from object to ID if it's an object
+    department: typeof rawForm.department === 'object' && rawForm.department?._id
+      ? rawForm.department._id
+      : rawForm.department,
+    // Handle any other object reference fields that should be IDs
+    reportingTo: typeof rawForm.reportingTo === 'object' && rawForm.reportingTo?._id
+      ? rawForm.reportingTo._id
+      : rawForm.reportingTo,
+  };
 
   return (
     <div className="container mx-auto p-6 max-w-5xl space-y-6">
@@ -126,10 +144,17 @@ export default function HRMSFormViewPage() {
                 </Link>
               )}
               
-              <Button size="sm" variant="outline">
-                <PrinterIcon className="h-4 w-4 mr-2" />
-                Print
-              </Button>
+              <PDFGenerator
+                formType={formType}
+                formId={formId}
+                formData={form}
+                triggerButton={
+                  <Button size="sm" variant="outline">
+                    <PrinterIcon className="h-4 w-4 mr-2" />
+                    Print
+                  </Button>
+                }
+              />
               
               <Button size="sm" variant="outline">
                 <ShareIcon className="h-4 w-4 mr-2" />
@@ -181,7 +206,16 @@ export default function HRMSFormViewPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">{step.stepName}</p>
                       <p className="text-xs text-muted-foreground">
-                        {step.assignedApprovers?.map((approver: any) => approver.userName).join(', ')}
+                        {step.assignedApprovers?.map((approver: any) => {
+                          // Extract a string representation safely from the approver object
+                          // Some approvers might be entire user objects rather than just having a userName
+                          if (typeof approver === 'string') return approver;
+                          if (approver?.userName) return approver.userName;
+                          if (approver?.displayName) return approver.displayName;
+                          if (approver?.firstName && approver?.lastName) return `${approver.firstName} ${approver.lastName}`;
+                          if (approver?.email) return approver.email;
+                          return 'Unknown Approver';
+                        }).join(', ')}
                       </p>
                     </div>
                     <div className="text-xs text-muted-foreground">
@@ -199,7 +233,11 @@ export default function HRMSFormViewPage() {
                     <span className="font-medium text-green-900">Form Approved</span>
                   </div>
                   <p className="text-sm text-green-800">
-                    Approved by {approvalInstance.finalResolution.resolvedBy} on{' '}
+                    Approved by {typeof approvalInstance.finalResolution.resolvedBy === 'string' 
+                    ? approvalInstance.finalResolution.resolvedBy 
+                    : approvalInstance.finalResolution.resolvedBy?.displayName || 
+                      approvalInstance.finalResolution.resolvedBy?.email || 
+                      approvalInstance.finalResolution.resolvedBy?.firstName || 'Unknown'} on{' '}
                     {new Date(approvalInstance.finalResolution.resolvedDate).toLocaleDateString()}
                   </p>
                   {approvalInstance.finalResolution.finalComments && (
@@ -217,7 +255,11 @@ export default function HRMSFormViewPage() {
                     <span className="font-medium text-red-900">Form Rejected</span>
                   </div>
                   <p className="text-sm text-red-800">
-                    Rejected by {approvalInstance.finalResolution.resolvedBy} on{' '}
+                    Rejected by {typeof approvalInstance.finalResolution.resolvedBy === 'string' 
+                    ? approvalInstance.finalResolution.resolvedBy 
+                    : approvalInstance.finalResolution.resolvedBy?.displayName || 
+                      approvalInstance.finalResolution.resolvedBy?.email || 
+                      approvalInstance.finalResolution.resolvedBy?.firstName || 'Unknown'} on{' '}
                     {new Date(approvalInstance.finalResolution.resolvedDate).toLocaleDateString()}
                   </p>
                   {approvalInstance.finalResolution.finalComments && (

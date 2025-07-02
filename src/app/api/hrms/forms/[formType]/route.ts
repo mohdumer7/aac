@@ -9,6 +9,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { formType: string } }
 ) {
+  // Get the params object first - await the entire object
+  const resolvedParams = await params;
+  const formType = resolvedParams.formType;
+  
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -19,7 +23,7 @@ export async function GET(
     }
 
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -46,7 +50,7 @@ export async function GET(
     };
 
     const result = await HRMSManager.getForms(
-      params.formType,
+      formType,
       filters,
       pagination
     );
@@ -57,7 +61,7 @@ export async function GET(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error fetching ${params.formType}:`, error);
+    console.error(`Error fetching ${formType}:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
@@ -70,6 +74,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { formType: string } }
 ) {
+  // Get the params object first - await the entire object
+  const resolvedParams = await params;
+  const formType = resolvedParams.formType;
+  
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -80,7 +88,7 @@ export async function POST(
     }
 
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -90,7 +98,7 @@ export async function POST(
     const body = await request.json();
     
     const result = await HRMSManager.createForm(
-      params.formType,
+      formType,
       body,
       session.user.id
     );
@@ -101,7 +109,7 @@ export async function POST(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error creating ${params.formType}:`, error);
+    console.error(`Error creating ${formType}:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

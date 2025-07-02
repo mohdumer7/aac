@@ -128,6 +128,7 @@ export default function NewHRMSFormPage() {
         onSaveDraft={handleSaveDraft}
         onSubmit={handleSubmit}
         isLoading={isCreating || isSaving}
+        formType={formType}
       >
         {formConfig.sections.map((section) => (
           <HRMSFormSection

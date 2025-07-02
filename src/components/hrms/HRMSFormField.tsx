@@ -21,6 +21,44 @@ interface HRMSFormFieldProps {
   disabled?: boolean;
 }
 
+// Helper function to safely extract display value from possibly nested objects like users
+const extractSafeDisplayValue = (value: any): string => {
+  // Return directly if value is a primitive type
+  if (value === null || value === undefined) return '';
+  if (typeof value !== 'object') return String(value);
+  
+  // If it's a Date object, format it
+  if (value instanceof Date) return value.toLocaleDateString();
+  
+  // Handle user objects - extract the most suitable display property
+  if (typeof value === 'object') {
+    // Try common user display fields
+    if (value.displayName) return value.displayName;
+    if (value.userName) return value.userName;
+    if (value.email) return value.email;
+    if (value.firstName && value.lastName) return `${value.firstName} ${value.lastName}`;
+    if (value.firstName) return value.firstName;
+    if (value.name) return value.name;
+    
+    // If it has an _id, it's likely a reference object that hasn't been properly handled
+    if (value._id) return '[Object Reference]';
+    
+    // For arrays, join the display values of items
+    if (Array.isArray(value)) {
+      return value.map(item => extractSafeDisplayValue(item)).join(', ');
+    }
+    
+    // For other objects with a toString method, use it
+    if (value.toString && value.toString !== Object.prototype.toString) {
+      const stringValue = value.toString();
+      if (stringValue !== '[object Object]') return stringValue;
+    }
+  }
+  
+  // Default case - should avoid getting here
+  return '[Complex Object]';
+};
+
 export default function HRMSFormField({ field, disabled = false }: HRMSFormFieldProps) {
   const { control, formState: { errors }, watch } = useFormContext();
   
@@ -34,6 +72,14 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
   }, [field.showIf, field.hidden, watchedValues]);
 
   if (!shouldShow) return null;
+
+  // Function to safely render any field value that might be a user object
+  const getSafeFieldValue = (value: any) => {
+    if (disabled && value !== null && value !== undefined && typeof value === 'object') {
+      return extractSafeDisplayValue(value);
+    }
+    return value;
+  };
 
   const renderField = () => {
     switch (field.type) {
@@ -66,6 +112,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
                 className={cn(error && "border-destructive")}
+                value={getSafeFieldValue(controllerField.value)}
               />
             )}
           />
@@ -94,7 +141,12 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
                 className={cn(error && "border-destructive")}
-                onChange={(e) => controllerField.onChange(e.target.value ? Number(e.target.value) : '')}
+                onChange={(e) => {
+                  // Always return a number (or null) to maintain controlled status
+                  const value = e.target.value === '' ? null : Number(e.target.value);
+                  controllerField.onChange(value);
+                }}
+                value={getSafeFieldValue(controllerField.value)}
               />
             )}
           />
@@ -121,8 +173,11 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
                 {...controllerField}
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
-                className={cn(error && "border-destructive")}
-                rows={4}
+                className={cn(
+                  "min-h-[100px]",
+                  error && "border-destructive"
+                )}
+                value={getSafeFieldValue(controllerField.value)}
               />
             )}
           />
@@ -136,24 +191,39 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
             rules={{
               required: field.required ? `${field.label} is required` : false
             }}
-            render={({ field: controllerField }) => (
-              <Select
-                onValueChange={controllerField.onChange}
-                value={controllerField.value}
-                disabled={disabled || field.disabled}
-              >
-                <SelectTrigger className={cn(error && "border-destructive")}>
-                  <SelectValue placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {field.options?.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            render={({ field: controllerField }) => {
+              // For view mode, display the label instead of the value
+              if (disabled) {
+                // Find the option that matches the current value
+                const selectedOption = field.options?.find(option => option.value === controllerField.value);
+                return (
+                  <div className="p-2 border rounded bg-muted/30">
+                    {selectedOption ? selectedOption.label : (controllerField.value || '—')}
+                  </div>
+                );
+              }
+              
+              // For edit mode, use the regular select component
+              return (
+                <Select
+                  onValueChange={controllerField.onChange}
+                  value={typeof controllerField.value === 'object' && disabled ? 
+                    extractSafeDisplayValue(controllerField.value) : (controllerField.value || '')}
+                  disabled={field.disabled}
+                >
+                  <SelectTrigger className={cn(error && "border-destructive")}>
+                    <SelectValue placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {field.options?.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
         );
 
@@ -231,9 +301,11 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {controllerField.value ? (
-                      format(new Date(controllerField.value), "PPP")
+                      typeof controllerField.value === 'object' && !(controllerField.value instanceof Date) ? 
+                        extractSafeDisplayValue(controllerField.value) :
+                        format(new Date(controllerField.value), "PPP")
                     ) : (
-                      <span>{field.placeholder || `Pick a date`}</span>
+                      <span>Pick a date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -280,11 +352,16 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
         );
 
       default:
+        // For unsupported field types or any other field that might render a user object directly
         return (
-          <Input
-            placeholder={`Unsupported field type: ${field.type}`}
-            disabled
-          />
+          <div className="text-sm">
+            {disabled && field.value && typeof field.value === 'object' ? 
+              extractSafeDisplayValue(field.value) : 
+              <div className="text-muted-foreground">
+                Field type '{field.type}' not supported
+              </div>
+            }
+          </div>
         );
     }
   };

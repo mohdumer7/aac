@@ -32,6 +32,8 @@ export default function EditHRMSFormPage() {
     isLoading: isLoadingForm, 
     error: formError 
   } = useGetFormByIdQuery({ formType, id: formId });
+
+  console.log(formData);
   
   const [updateForm, { isLoading: isUpdating }] = useUpdateFormMutation();
   const [saveDraft, { isLoading: isSaving }] = useSaveDraftMutation();
@@ -137,7 +139,27 @@ export default function EditHRMSFormPage() {
     );
   }
 
-  const form = formData.data;
+  const rawForm = formData.data;
+  
+  // Preprocess form data to convert complex objects to IDs for dropdown fields
+  const form = {
+    ...rawForm,
+    // Convert requestedBy from object to ID if it's an object
+    requestedBy: typeof rawForm.requestedBy === 'object' && rawForm.requestedBy?._id 
+      ? rawForm.requestedBy._id 
+      : rawForm.requestedBy,
+    // Convert department from object to ID if it's an object
+    department: typeof rawForm.department === 'object' && rawForm.department?._id
+      ? rawForm.department._id
+      : rawForm.department,
+    // Handle any other object reference fields that should be IDs
+    reportingTo: typeof rawForm.reportingTo === 'object' && rawForm.reportingTo?._id
+      ? rawForm.reportingTo._id
+      : rawForm.reportingTo,
+  };
+  
+  // Log processed form data
+  console.log("Processed form data:", form);
 
   // Check if form can be edited
   if (!form.isDraft && form.status !== 'rejected') {

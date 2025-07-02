@@ -34,6 +34,59 @@ interface HRMSFormContainerProps {
   formId?: string;
 }
 
+// Helper function to safely process form data objects to prevent React rendering errors
+const processSafeFormData = (data: any) => {
+  if (!data) return {};
+  
+  const safeData: Record<string, any> = {};
+  
+  // Process all fields to ensure no objects are passed that could cause React child errors
+  Object.keys(data).forEach(key => {
+    const value = data[key];
+    
+    // Handle null/undefined
+    if (value === null || value === undefined) {
+      safeData[key] = value;
+      return;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(value)) {
+      safeData[key] = value.map(item => {
+        if (item === null || item === undefined) return item;
+        if (typeof item !== 'object') return item;
+        
+        // For objects in arrays, convert to ID if they have an _id property
+        if (item && typeof item === 'object' && item._id) {
+          // Return just the ID for object references
+          return item._id;
+        }
+        
+        return item;
+      });
+      return;
+    }
+    
+    // Handle objects (particularly user objects)
+    if (value && typeof value === 'object') {
+      // If it has an _id, it's likely a reference to another entity
+      if (value._id) {
+        safeData[key] = value._id;
+        return;
+      }
+      
+      // For other objects, keep them as is
+      safeData[key] = value;
+      return;
+    }
+    
+    // For primitive values, keep as is
+    safeData[key] = value;
+  });
+  
+  return safeData;
+};
+
 export default function HRMSFormContainer({
   formConfig,
   initialData,
@@ -51,29 +104,46 @@ export default function HRMSFormContainer({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Process initialData to ensure no objects are passed that could cause React child errors
+  const safeInitialData = processSafeFormData(initialData);
 
   const methods = useForm({
-    defaultValues: initialData || {},
+    defaultValues: safeInitialData || {},
     mode: 'onChange'
   });
 
   const { handleSubmit, formState: { errors, isDirty }, watch } = methods;
 
-  // Auto-save draft functionality
+  // Auto-save draft functionality with significant debounce
   useEffect(() => {
-    if (mode === 'create' || mode === 'edit') {
-      const subscription = watch((value, { name, type }) => {
-        if (type === 'change' && onSaveDraft && isDraft && isDirty) {
-          // Debounce auto-save
-          const timeoutId = setTimeout(() => {
+    // Disable auto-save for specific form types
+    const noAutoSaveFormTypes = ['candidate_information', 'manpower_requisition'];
+    
+    if ((mode === 'create' || mode === 'edit') && !noAutoSaveFormTypes.includes(formType || '')) {
+      let timeoutId: NodeJS.Timeout | null = null;
+      
+      const subscription = watch((value) => {
+        if (onSaveDraft && isDraft && isDirty) {
+          // Clear any existing timeout to debounce properly
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          
+          // Use a longer debounce time to reduce API calls (5 seconds)
+          timeoutId = setTimeout(() => {
             handleSaveDraft(value);
-          }, 2000);
-
-          return () => clearTimeout(timeoutId);
+            timeoutId = null;
+          }, 5000);
         }
       });
 
-      return () => subscription.unsubscribe();
+      return () => {
+        subscription.unsubscribe();
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      };
     }
   }, [watch, mode, onSaveDraft, isDraft, isDirty]);
 
@@ -82,12 +152,14 @@ export default function HRMSFormContainer({
 
     try {
       setIsSaving(true);
-      const formData = data || methods.getValues();
+      let formData = data || methods.getValues();
+      // Process form data before saving to ensure all object references are handled properly
+      formData = processSafeFormData(formData);
       await onSaveDraft(formData);
       setLastSaved(new Date());
-      toast.success('Draft saved successfully');
+      toast.success('Draft saved');
     } catch (error: any) {
-      toast.error('Failed to save draft: ' + error.message);
+      toast.error(error.message || 'Failed to save draft');
     } finally {
       setIsSaving(false);
     }
@@ -264,7 +336,11 @@ export default function HRMSFormContainer({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium">Created By:</span>
-                  <p className="text-muted-foreground">{initialData.addedBy}</p>
+                  <p className="text-muted-foreground">
+                    {typeof initialData.addedBy === 'string'
+                      ? initialData.addedBy
+                      : initialData.addedBy?.displayName || initialData.addedBy?.email || initialData.addedBy?.firstName || 'Unknown'}
+                  </p>
                 </div>
                 <div>
                   <span className="font-medium">Created Date:</span>
@@ -280,7 +356,11 @@ export default function HRMSFormContainer({
                 </div>
                 <div>
                   <span className="font-medium">Updated By:</span>
-                  <p className="text-muted-foreground">{initialData.updatedBy}</p>
+                  <p className="text-muted-foreground">
+                    {typeof initialData.updatedBy === 'string'
+                      ? initialData.updatedBy
+                      : initialData.updatedBy?.displayName || initialData.updatedBy?.email || initialData.updatedBy?.firstName || 'Unknown'}
+                  </p>
                 </div>
               </div>
               

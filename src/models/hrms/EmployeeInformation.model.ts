@@ -324,7 +324,7 @@ EmployeeInformationSchema.pre('save', function(next) {
 });
 
 // Index for efficient queries
-EmployeeInformationSchema.index({ empId: 1 });
+// Removed duplicate empId index since it's already defined as unique in the schema
 EmployeeInformationSchema.index({ empName: 1 });
 EmployeeInformationSchema.index({ status: 1 });
 EmployeeInformationSchema.index({ department: 1, status: 1 });

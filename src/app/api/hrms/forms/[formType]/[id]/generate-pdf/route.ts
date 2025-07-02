@@ -17,7 +17,9 @@ export async function POST(
       );
     }
 
-    const { formType, id } = params;
+    // In Next.js App Router, params are already resolved
+    const formType = params.formType;
+    const id = params.id;
     const body = await request.json();
     const { includeApprovalHistory = true, organizationLogo, organizationName } = body;
 
@@ -32,10 +34,34 @@ export async function POST(
 
     const formData = formResult.data;
 
-    // Prepare PDF data
+    // Prepare PDF data with safety checks for objects that might be IDs now
+    // This ensures PDF generation works even if the form data contains IDs instead of full objects
+    const formDataForPDF = { ...formData.formData };
+    
+    // Handle mrNumber specifically for manpower_requisition forms
+    if (formType === 'manpower_requisition' && !formDataForPDF.mrNumber) {
+      formDataForPDF.mrNumber = id;  // Use the form ID as mrNumber if not available
+    }
+    
+    // Add safety checks for department
+    if (formDataForPDF.department && typeof formDataForPDF.department === 'string') {
+      // If department is just an ID, create an object with the ID as name
+      formDataForPDF.department = { _id: formDataForPDF.department, name: formDataForPDF.department };
+    }
+    
+    // Add safety checks for reportingTo
+    if (formDataForPDF.reportingTo && typeof formDataForPDF.reportingTo === 'string') {
+      formDataForPDF.reportingTo = { _id: formDataForPDF.reportingTo, name: formDataForPDF.reportingTo };
+    }
+    
+    // Add safety checks for location
+    if (formDataForPDF.location && typeof formDataForPDF.location === 'string') {
+      formDataForPDF.location = { _id: formDataForPDF.location, name: formDataForPDF.location };
+    }
+    
     const pdfData = {
       formType,
-      formData: formData.formData,
+      formData: formDataForPDF,
       submittedBy: formData.submittedBy,
       submissionDate: formData.submittedAt,
       approvalHistory: includeApprovalHistory ? formData.approvalHistory : undefined,

@@ -44,7 +44,8 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: true, // Allow buffering commands until connection is ready
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds if server selection fails
     }
 
     // Register all models by ensuring their modules are loaded.

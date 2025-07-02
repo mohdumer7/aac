@@ -9,6 +9,11 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { formType: string; id: string } }
 ) {
+  // Get the params object first - await the entire object
+  const resolvedParams = await params;
+  const formType = resolvedParams.formType;
+  const id = resolvedParams.id;
+  
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -19,7 +24,7 @@ export async function POST(
     }
 
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -29,8 +34,8 @@ export async function POST(
     const body = await request.json();
     
     const result = await HRMSManager.saveDraft(
-      params.formType,
-      params.id,
+      formType,
+      id,
       body,
       session.user.id
     );
@@ -41,7 +46,7 @@ export async function POST(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error saving ${params.formType} draft:`, error);
+    console.error(`Error saving draft for ${formType}:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
