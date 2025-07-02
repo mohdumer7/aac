@@ -96,7 +96,12 @@ export default function EditHRMSFormPage() {
       
       if (result.success) {
         toast.success('Form updated successfully!');
-        router.push(`/dashboard/hrms/forms/${formType}/${formId}`);
+        
+        // Don't redirect to view page if in workflow mode
+        if (!isWorkflow) {
+          router.push(`/dashboard/hrms/forms/${formType}/${formId}`);
+        }
+        // If in workflow mode, let the workflow context handle navigation
       }
     } catch (error: any) {
       throw new Error(error.message || 'Failed to update form');
