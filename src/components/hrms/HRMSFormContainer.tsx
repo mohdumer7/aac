@@ -282,7 +282,10 @@ export default function HRMSFormContainer({
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => handleSaveDraft()}
+                        onClick={() => {
+                          console.log('💾 MANUAL SAVE: Save Draft button clicked');
+                          handleSaveDraft();
+                        }}
                         disabled={isSaving || isLoading}
                       >
                         <SaveIcon className="h-4 w-4 mr-2" />
