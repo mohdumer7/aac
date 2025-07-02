@@ -118,20 +118,21 @@ export default function HRMSFormContainer({
   const handleFormSubmit = async (data: any, event?: React.BaseSyntheticEvent) => {
     console.log('📝 FORM CONTAINER: handleFormSubmit called', { 
       mode, 
+      isManualSubmit,
       hasHandlers: { onSubmit: !!onSubmit, onUpdate: !!onUpdate },
       eventType: event?.type,
       submitterName: event?.nativeEvent?.submitter?.name,
       submitterType: event?.nativeEvent?.submitter?.type
     });
     
-    // Check if this was triggered by the actual submit button, not auto-save
-    if (event && event.nativeEvent?.submitter) {
-      const submitter = event.nativeEvent.submitter as HTMLButtonElement;
-      if (submitter.type !== 'submit') {
-        console.log('📝 FORM CONTAINER: Ignoring non-submit button trigger');
-        return;
-      }
+    // CRITICAL: Only allow submission if it was manually triggered
+    if (!isManualSubmit) {
+      console.log('🚫 FORM CONTAINER: Blocking automatic submission - not manually triggered');
+      return;
     }
+    
+    // Reset the manual submit flag
+    setIsManualSubmit(false);
     
     if (!onSubmit && !onUpdate) return;
 
