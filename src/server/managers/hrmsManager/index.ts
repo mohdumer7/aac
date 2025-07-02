@@ -102,7 +102,10 @@ export class HRMSManager {
         draftSavedAt: new Date()
       });
 
-      await newForm.save();
+      // Skip validation for draft saves
+      const skipValidation = formData.isDraft !== false;
+      await newForm.save({ validateBeforeSave: !skipValidation });
+      
       return {
         success: true,
         data: newForm,
