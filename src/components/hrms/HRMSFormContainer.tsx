@@ -39,6 +39,7 @@ export default function HRMSFormContainer({
   formConfig,
   initialData,
   mode,
+  disabledFields = [],
   onSaveDraft,
   onSubmit,
   onUpdate,
