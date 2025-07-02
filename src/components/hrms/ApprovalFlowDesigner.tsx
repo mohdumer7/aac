@@ -50,34 +50,38 @@ import {
   WorkflowIcon,
   ZoomInIcon,
   ZoomOutIcon,
-  LayoutIcon
+  LayoutIcon,
+  GitBranchIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Custom Node Types
+// Enhanced Node Types for Approval Flow
 const StartNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-green-50 border-2 border-green-200">
-    <div className="flex">
-      <div className="rounded-full w-12 h-12 flex justify-center items-center bg-green-500">
-        <PlayIcon className="w-6 h-6 text-white" />
+  <div className="px-4 py-3 shadow-lg rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white border-2 border-green-700">
+    <div className="flex items-center">
+      <div className="rounded-full w-10 h-10 flex justify-center items-center bg-white bg-opacity-20">
+        <PlayIcon className="w-5 h-5" />
       </div>
-      <div className="ml-2">
-        <div className="text-lg font-bold text-green-700">Start</div>
-        <div className="text-gray-500">Form Submission</div>
+      <div className="ml-3">
+        <div className="text-sm font-bold">START</div>
+        <div className="text-xs opacity-90">Form Submitted</div>
       </div>
     </div>
   </div>
 );
 
 const EndNode = ({ data }: { data: any }) => (
-  <div className="px-4 py-2 shadow-md rounded-md bg-red-50 border-2 border-red-200">
-    <div className="flex">
-      <div className="rounded-full w-12 h-12 flex justify-center items-center bg-red-500">
-        <SettingsIcon className="w-6 h-6 text-white" />
+  <div className="px-4 py-3 shadow-lg rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-red-700">
+    <div className="flex items-center">
+      <div className="rounded-full w-10 h-10 flex justify-center items-center bg-white bg-opacity-20">
+        <CheckCircleIcon className="w-5 h-5" />
       </div>
-      <div className="ml-2">
-        <div className="text-lg font-bold text-red-700">End</div>
-        <div className="text-gray-500">Final Decision</div>
+      <div className="ml-3">
+        <div className="text-sm font-bold">END</div>
+        <div className="text-xs opacity-90">Final Decision</div>
       </div>
     </div>
   </div>
@@ -93,54 +97,105 @@ const ApprovalNode = ({ data, selected }: { data: any; selected: boolean }) => {
     }
   };
 
+  const getApprovalTypeColor = (type: string) => {
+    switch (type) {
+      case 'specific_user': return 'from-blue-500 to-blue-600 border-blue-700';
+      case 'role_based': return 'from-purple-500 to-purple-600 border-purple-700';
+      case 'department_head': return 'from-orange-500 to-orange-600 border-orange-700';
+      default: return 'from-gray-500 to-gray-600 border-gray-700';
+    }
+  };
+
   return (
-    <div className={`px-4 py-3 shadow-md rounded-md bg-white border-2 ${
-      selected ? 'border-blue-500' : 'border-gray-200'
-    } min-w-[200px]`}>
+    <div className={`px-4 py-3 shadow-lg rounded-lg bg-gradient-to-r ${getApprovalTypeColor(data.approverType)} text-white border-2 ${
+      selected ? 'ring-2 ring-white ring-opacity-50' : ''
+    } min-w-[200px] max-w-[250px]`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {getApproverIcon(data.approverType)}
+          <div className="rounded-full w-8 h-8 flex justify-center items-center bg-white bg-opacity-20">
+            {getApproverIcon(data.approverType)}
+          </div>
           <div>
-            <div className="text-sm font-bold text-gray-900">{data.label}</div>
-            <div className="text-xs text-gray-500">
-              {data.approverType?.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+            <div className="text-sm font-bold truncate">{data.label || 'Approval Step'}</div>
+            <div className="text-xs opacity-90 capitalize">
+              {data.approverType?.replace('_', ' ') || 'User Approval'}
             </div>
           </div>
         </div>
-        <Badge variant={data.isRequired ? "default" : "secondary"} className="text-xs">
-          {data.isRequired ? "Required" : "Optional"}
-        </Badge>
+        <div className="ml-2">
+          <Badge variant={data.isRequired ? "default" : "secondary"} className="text-xs bg-white bg-opacity-20 text-white border-white border-opacity-30">
+            {data.isRequired ? "Required" : "Optional"}
+          </Badge>
+        </div>
       </div>
       
       {data.approvers && data.approvers.length > 0 && (
-        <div className="mt-2 text-xs text-gray-600">
+        <div className="mt-2 text-xs opacity-90">
           {data.approvers.length} approver{data.approvers.length !== 1 ? 's' : ''} assigned
         </div>
       )}
 
       {data.timeoutDays && (
-        <div className="mt-1 text-xs text-orange-600">
-          Timeout: {data.timeoutDays} days
+        <div className="mt-1 text-xs opacity-90 flex items-center gap-1">
+          <ClockIcon className="w-3 h-3" />
+          {data.timeoutDays} days timeout
+        </div>
+      )}
+
+      {data.conditions && data.conditions.length > 0 && (
+        <div className="mt-1 text-xs opacity-90 flex items-center gap-1">
+          <GitBranchIcon className="w-3 h-3" />
+          Conditional
         </div>
       )}
     </div>
   );
 };
 
+const DecisionNode = ({ data, selected }: { data: any; selected: boolean }) => (
+  <div className={`px-4 py-3 shadow-lg rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-2 border-yellow-700 ${
+    selected ? 'ring-2 ring-white ring-opacity-50' : ''
+  } min-w-[180px]`}>
+    <div className="flex items-center justify-center">
+      <div className="rounded-full w-8 h-8 flex justify-center items-center bg-white bg-opacity-20 mr-2">
+        <GitBranchIcon className="w-4 h-4" />
+      </div>
+      <div className="text-center">
+        <div className="text-sm font-bold">{data.label || 'Decision'}</div>
+        <div className="text-xs opacity-90">Conditional Branch</div>
+      </div>
+    </div>
+    {data.condition && (
+      <div className="mt-2 text-xs opacity-90 text-center">
+        {data.condition}
+      </div>
+    )}
+  </div>
+);
+
 const nodeTypes: NodeTypes = {
   start: StartNode,
   end: EndNode,
   approval: ApprovalNode,
+  decision: DecisionNode,
 };
 
-// Layout nodes using dagre
+// Layout nodes using dagre with better spacing
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setGraph({ 
+    rankdir: direction,
+    nodesep: 100,
+    ranksep: 150,
+    marginx: 50,
+    marginy: 50
+  });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 250, height: 100 });
+    const width = node.type === 'approval' ? 250 : node.type === 'decision' ? 180 : 150;
+    const height = 80;
+    dagreGraph.setNode(node.id, { width, height });
   });
 
   edges.forEach((edge) => {
@@ -154,8 +209,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x - 125,
-        y: nodeWithPosition.y - 50,
+        x: nodeWithPosition.x - (nodeWithPosition.width / 2),
+        y: nodeWithPosition.y - (nodeWithPosition.height / 2),
       },
     };
   });
@@ -163,7 +218,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   return { nodes: layoutedNodes, edges };
 };
 
-interface ApprovalFlowDesignerProps {
+interface NodeBasedApprovalFlowDesignerProps {
   initialFlowData?: {
     nodes: Node[];
     edges: Edge[];
@@ -181,23 +236,23 @@ const FlowDesigner = ({
   availableRoles, 
   onSave, 
   onTest 
-}: ApprovalFlowDesignerProps) => {
+}: NodeBasedApprovalFlowDesignerProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
   
   // Initialize with start and end nodes if no initial data
   const initialNodes: Node[] = initialFlowData?.nodes || [
     {
-      id: 'start',
+      id: 'start-node',
       type: 'start',
-      position: { x: 250, y: 25 },
+      position: { x: 250, y: 50 },
       data: { label: 'Start' },
       deletable: false,
     },
     {
-      id: 'end',
+      id: 'end-node',
       type: 'end',
-      position: { x: 250, y: 300 },
+      position: { x: 250, y: 400 },
       data: { label: 'End' },
       deletable: false,
     },
@@ -207,7 +262,7 @@ const FlowDesigner = ({
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [stepCounter, setStepCounter] = useState(1);
+  const [nodeCounter, setNodeCounter] = useState(1);
   
   // Step configuration dialog
   const [stepDialog, setStepDialog] = useState<{
@@ -228,12 +283,21 @@ const FlowDesigner = ({
     notifyOnSubmission: true,
     notifyOnApproval: true,
     notifyOnRejection: true,
+    conditions: [] as any[],
   });
 
   const reactFlow = useReactFlow();
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => {
+      const newEdge = {
+        ...params,
+        animated: true,
+        style: { stroke: '#6366f1', strokeWidth: 2 },
+        markerEnd: { type: 'arrowclosed' as const, color: '#6366f1' },
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
     [setEdges]
   );
 
@@ -248,33 +312,57 @@ const FlowDesigner = ({
 
       if (!reactFlowWrapper.current || !reactFlowInstance) return;
 
+      const nodeType = event.dataTransfer.getData('application/reactflow');
+      if (!nodeType) return;
+
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const position = reactFlowInstance.project({
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       });
 
-      const newNodeId = `step-${stepCounter}`;
-      const newNode: Node = {
-        id: newNodeId,
-        type: 'approval',
-        position,
-        data: {
-          label: `Approval Step ${stepCounter}`,
-          stepOrder: stepCounter,
-          approverType: 'specific_user',
-          approvers: [],
-          isRequired: true,
-        },
-      };
+      const newNodeId = `${nodeType}-${nodeCounter}`;
+      let newNode: Node;
+
+      switch (nodeType) {
+        case 'approval':
+          newNode = {
+            id: newNodeId,
+            type: 'approval',
+            position,
+            data: {
+              label: `Approval Step ${nodeCounter}`,
+              stepOrder: nodeCounter,
+              approverType: 'specific_user',
+              approvers: [],
+              isRequired: true,
+            },
+          };
+          break;
+        case 'decision':
+          newNode = {
+            id: newNodeId,
+            type: 'decision',
+            position,
+            data: {
+              label: `Decision ${nodeCounter}`,
+              condition: 'If condition is met',
+            },
+          };
+          break;
+        default:
+          return;
+      }
 
       setNodes((nds) => nds.concat(newNode));
-      setStepCounter(stepCounter + 1);
+      setNodeCounter(nodeCounter + 1);
       
-      // Open configuration dialog for new node
-      setStepDialog({ open: true, node: newNode, isNew: true });
+      // Open configuration dialog for new approval nodes
+      if (nodeType === 'approval') {
+        setStepDialog({ open: true, node: newNode, isNew: true });
+      }
     },
-    [reactFlowInstance, stepCounter, setNodes]
+    [reactFlowInstance, nodeCounter, setNodes]
   );
 
   const onNodeDoubleClick = useCallback(
@@ -293,6 +381,7 @@ const FlowDesigner = ({
           notifyOnSubmission: node.data.notifyOnSubmission !== false,
           notifyOnApproval: node.data.notifyOnApproval !== false,
           notifyOnRejection: node.data.notifyOnRejection !== false,
+          conditions: node.data.conditions || [],
         });
         setStepDialog({ open: true, node, isNew: false });
       }
@@ -318,6 +407,7 @@ const FlowDesigner = ({
         notifyOnSubmission: stepConfig.notifyOnSubmission,
         notifyOnApproval: stepConfig.notifyOnApproval,
         notifyOnRejection: stepConfig.notifyOnRejection,
+        conditions: stepConfig.conditions,
       },
     };
 
@@ -355,13 +445,18 @@ const FlowDesigner = ({
     }
   };
 
-  const deleteNode = (nodeId: string) => {
-    setNodes((nds) => nds.filter((node) => node.id !== nodeId));
-    setEdges((eds) => eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
+  const deleteSelectedNodes = () => {
+    const selectedNodes = nodes.filter(node => node.selected && node.deletable !== false);
+    const selectedNodeIds = selectedNodes.map(node => node.id);
+    
+    setNodes((nds) => nds.filter((node) => !selectedNodeIds.includes(node.id)));
+    setEdges((eds) => eds.filter((edge) => 
+      !selectedNodeIds.includes(edge.source) && !selectedNodeIds.includes(edge.target)
+    ));
   };
 
   return (
-    <div className="h-[600px] w-full border rounded-lg">
+    <div className="h-[700px] w-full border rounded-lg relative">
       <div ref={reactFlowWrapper} className="h-full w-full">
         <ReactFlow
           nodes={nodes}
@@ -375,10 +470,21 @@ const FlowDesigner = ({
           onNodeDoubleClick={onNodeDoubleClick}
           nodeTypes={nodeTypes}
           fitView
+          attributionPosition="bottom-left"
         >
           <Controls />
-          <MiniMap />
-          <Background variant="dots" gap={12} size={1} />
+          <MiniMap 
+            nodeColor={(node) => {
+              switch (node.type) {
+                case 'start': return '#10b981';
+                case 'end': return '#ef4444';
+                case 'approval': return '#6366f1';
+                case 'decision': return '#f59e0b';
+                default: return '#6b7280';
+              }
+            }}
+          />
+          <Background variant="dots" gap={20} size={1} color="#e5e7eb" />
           
           {/* Toolbar Panel */}
           <Panel position="top-left" className="space-x-2">
@@ -386,6 +492,7 @@ const FlowDesigner = ({
               size="sm"
               variant="outline"
               onClick={handleAutoLayout}
+              className="bg-white shadow-md"
             >
               <LayoutIcon className="w-4 h-4 mr-2" />
               Auto Layout
@@ -394,41 +501,84 @@ const FlowDesigner = ({
               size="sm"
               variant="outline"
               onClick={handleSave}
+              className="bg-white shadow-md"
             >
               <SaveIcon className="w-4 h-4 mr-2" />
-              Save Design
+              Save Flow
             </Button>
             {onTest && (
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handleTest}
+                className="bg-white shadow-md"
               >
                 <PlayIcon className="w-4 h-4 mr-2" />
                 Test Flow
               </Button>
             )}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={deleteSelectedNodes}
+              className="bg-white shadow-md text-red-600 hover:text-red-700"
+            >
+              <TrashIcon className="w-4 h-4 mr-2" />
+              Delete Selected
+            </Button>
           </Panel>
 
-          {/* Add Step Panel */}
+          {/* Node Palette Panel */}
           <Panel position="top-right">
-            <Card className="w-64">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Add Approval Step</CardTitle>
+            <Card className="w-64 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <WorkflowIcon className="w-4 h-4" />
+                  Flow Components
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Drag components to build your approval flow
+                </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
+                {/* Approval Node */}
                 <div
-                  className="p-4 border-2 border-dashed border-gray-300 rounded-md text-center cursor-move hover:border-gray-400 transition-colors"
+                  className="p-3 border-2 border-dashed border-blue-300 rounded-md text-center cursor-move hover:border-blue-400 hover:bg-blue-50 transition-colors"
                   draggable
                   onDragStart={(event) => {
                     event.dataTransfer.setData('application/reactflow', 'approval');
                     event.dataTransfer.effectAllowed = 'move';
                   }}
                 >
-                  <WorkflowIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-600">
-                    Drag to add approval step
-                  </p>
+                  <UserIcon className="w-6 h-6 mx-auto mb-1 text-blue-500" />
+                  <p className="text-xs font-medium text-blue-700">Approval Step</p>
+                  <p className="text-xs text-blue-600">User/Role approval</p>
+                </div>
+
+                {/* Decision Node */}
+                <div
+                  className="p-3 border-2 border-dashed border-yellow-300 rounded-md text-center cursor-move hover:border-yellow-400 hover:bg-yellow-50 transition-colors"
+                  draggable
+                  onDragStart={(event) => {
+                    event.dataTransfer.setData('application/reactflow', 'decision');
+                    event.dataTransfer.effectAllowed = 'move';
+                  }}
+                >
+                  <GitBranchIcon className="w-6 h-6 mx-auto mb-1 text-yellow-500" />
+                  <p className="text-xs font-medium text-yellow-700">Decision Point</p>
+                  <p className="text-xs text-yellow-600">Conditional branch</p>
+                </div>
+
+                <Separator />
+                
+                <div className="text-xs text-muted-foreground">
+                  <p className="font-medium mb-1">How to use:</p>
+                  <ul className="space-y-1 text-xs">
+                    <li>• Drag components onto canvas</li>
+                    <li>• Connect nodes by dragging</li>
+                    <li>• Double-click to configure</li>
+                    <li>• Use Auto Layout to organize</li>
+                  </ul>
                 </div>
               </CardContent>
             </Card>
@@ -441,24 +591,25 @@ const FlowDesigner = ({
         open={stepDialog.open} 
         onOpenChange={(open) => setStepDialog({ open, node: null, isNew: false })}
       >
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {stepDialog.isNew ? 'Configure New Step' : 'Edit Step Configuration'}
+            <DialogTitle className="flex items-center gap-2">
+              <SettingsIcon className="w-5 h-5" />
+              {stepDialog.isNew ? 'Configure New Approval Step' : 'Edit Approval Step'}
             </DialogTitle>
             <DialogDescription>
               Define the approval step settings and assign approvers
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Step Name</Label>
                 <Input
                   value={stepConfig.stepName}
                   onChange={(e) => setStepConfig({ ...stepConfig, stepName: e.target.value })}
-                  placeholder="Enter step name"
+                  placeholder="e.g., Manager Approval"
                 />
               </div>
 
@@ -486,7 +637,7 @@ const FlowDesigner = ({
               <Textarea
                 value={stepConfig.stepDescription}
                 onChange={(e) => setStepConfig({ ...stepConfig, stepDescription: e.target.value })}
-                placeholder="Describe what this step involves"
+                placeholder="Describe what this approval step involves"
                 rows={2}
               />
             </div>
@@ -616,7 +767,7 @@ const FlowDesigner = ({
   );
 };
 
-const ApprovalFlowDesigner = (props: ApprovalFlowDesignerProps) => {
+const NodeBasedApprovalFlowDesigner = (props: NodeBasedApprovalFlowDesignerProps) => {
   return (
     <ReactFlowProvider>
       <FlowDesigner {...props} />
@@ -624,4 +775,4 @@ const ApprovalFlowDesigner = (props: ApprovalFlowDesignerProps) => {
   );
 };
 
-export default ApprovalFlowDesigner;
+export default NodeBasedApprovalFlowDesigner;
