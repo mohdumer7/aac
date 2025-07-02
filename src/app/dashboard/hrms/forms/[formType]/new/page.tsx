@@ -39,11 +39,19 @@ export default function NewHRMSFormPage() {
   
   // Sync workflow context with current form type
   useEffect(() => {
-    if (isWorkflow && formType) {
-      console.log('🔄 WORKFLOW: Syncing current step for form type:', formType);
-      workflow.syncCurrentStepByFormType(formType);
+    if (isWorkflow && formType && workflow.steps.length > 0) {
+      const stepIndex = workflow.steps.findIndex(step => step.formType === formType);
+      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
+        console.log('🔄 WORKFLOW: Syncing current step for form type:', { 
+          formType, 
+          oldStepIndex: currentStepIndex, 
+          newStepIndex: stepIndex 
+        });
+        // Use navigateToStep to properly update the context
+        workflow.navigateToStep(stepIndex);
+      }
     }
-  }, [isWorkflow, formType, workflow.steps.length]);
+  }, [isWorkflow, formType, workflow.steps.length, currentStepIndex]);
 
   // Get prefill data from previous workflow steps
   const getInitialFormData = () => {
