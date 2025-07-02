@@ -140,13 +140,10 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     
     const step = steps[stepIndex];
     if (step) {
-      if (step.formId) {
-        // Navigate to edit existing form
-        router.push(`/dashboard/hrms/forms/${step.formType}/${step.formId}/edit?workflow=true`);
-      } else {
-        // Navigate to create new form
-        router.push(`/dashboard/hrms/forms/${step.formType}/new?workflow=true`);
-      }
+      // ALWAYS navigate to the new form page in workflow mode
+      // The workflow context will handle loading existing data if the step is completed
+      console.log('🔄 WORKFLOW: Staying in workflow, navigating to new form page for step', step);
+      router.push(`/dashboard/hrms/forms/${step.formType}/new?workflow=true`);
     }
   };
 
