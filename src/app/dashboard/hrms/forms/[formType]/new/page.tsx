@@ -27,6 +27,7 @@ export default function NewHRMSFormPage() {
   // Data for dropdowns
   const { data: departmentsData } = useGetDepartmentsQuery({});
   const { data: approversData } = useGetAvailableApproversQuery({});
+  const { data: countriesData } = useGetCountriesQuery({});
 
   useEffect(() => {
     const config = getFormConfig(formType);
