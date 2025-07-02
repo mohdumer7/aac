@@ -139,13 +139,14 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false
             }}
             render={({ field: controllerField }) => (
               <Select
                 onValueChange={controllerField.onChange}
-                value={controllerField.value}
+                value={controllerField.value || ""}
                 disabled={disabled || field.disabled}
               >
                 <SelectTrigger className={cn(error && "border-destructive")}>
