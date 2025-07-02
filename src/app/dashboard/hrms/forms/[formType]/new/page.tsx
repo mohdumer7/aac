@@ -254,12 +254,17 @@ export default function NewHRMSFormPage() {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
+      {/* Workflow Navigation */}
+      {isWorkflow && <WorkflowNavigation />}
+      
       <HRMSFormContainer
         formConfig={formConfig}
         mode="create"
         onSaveDraft={handleSaveDraft}
         onSubmit={handleSubmit}
-        isLoading={isCreating || isSaving}
+        isLoading={isLoading}
+        initialData={getInitialFormData()}
+        disabledFields={getDisabledFields()}
       >
         {formConfig.sections.map((section) => (
           <HRMSFormSection
