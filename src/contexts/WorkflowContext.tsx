@@ -92,9 +92,27 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isRequired: step.isRequired || true
       }));
       setSteps(initialSteps);
+    } else if (workflowData.steps) {
+      // Use existing steps if template not available
+      setSteps(workflowData.steps);
     }
     
     setFormData(workflowData.formData || {});
+  };
+
+  // Function to sync current step based on form type
+  const syncCurrentStepByFormType = (currentFormType: string) => {
+    if (steps.length > 0) {
+      const stepIndex = steps.findIndex(step => step.formType === currentFormType);
+      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
+        console.log('🔄 WORKFLOW: Syncing current step based on form type', { 
+          currentFormType, 
+          oldStepIndex: currentStepIndex, 
+          newStepIndex: stepIndex 
+        });
+        setCurrentStepIndex(stepIndex);
+      }
+    }
   };
 
   const updateStepData = (stepIndex: number, formId: string, data: any) => {
