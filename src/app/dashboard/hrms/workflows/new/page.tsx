@@ -50,6 +50,23 @@ export default function NewWorkflowPage() {
   const departments = departmentsData?.data || [];
   const users = usersData?.data || [];
 
+  // Transform data for combobox
+  const userOptions = useMemo(() => 
+    users.map(user => ({
+      value: user._id,
+      label: `${user.firstName} ${user.lastName} (${user.email})`,
+      searchTerms: [user.firstName, user.lastName, user.email, user.empId || '']
+    })), [users]
+  );
+
+  const departmentOptions = useMemo(() => 
+    departments.map(dept => ({
+      value: dept._id,
+      label: dept.name,
+      searchTerms: [dept.name, dept.depId || '']
+    })), [departments]
+  );
+
   const handleTemplateSelect = (templateKey: string) => {
     setSelectedTemplate(templateKey);
   };
