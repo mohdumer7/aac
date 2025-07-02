@@ -63,6 +63,10 @@ export default function NewHRMSFormPage() {
         }
         
         if (field.name === 'nationality') {
+          console.log('🌍 COUNTRIES: Loading nationality options', {
+            countriesDataExists: !!countriesData,
+            countriesCount: countriesData?.data?.length || 0
+          });
           return {
             ...field,
             options: countriesData?.data?.map((country: any) => ({
