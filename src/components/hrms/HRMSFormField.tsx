@@ -109,6 +109,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false,
               minLength: field.validation?.min ? {
@@ -123,6 +124,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
             render={({ field: controllerField }) => (
               <Textarea
                 {...controllerField}
+                value={controllerField.value || ''}
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
                 className={cn(error && "border-destructive")}
