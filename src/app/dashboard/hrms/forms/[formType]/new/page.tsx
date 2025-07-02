@@ -82,6 +82,9 @@ export default function NewHRMSFormPage() {
   const { data: departmentsData } = useGetDepartmentsQuery({});
   const { data: approversData } = useGetAvailableApproversQuery({});
   const { data: countriesData } = useGetCountriesQuery({});
+  const { data: rolesData } = useGetRolesQuery({});
+  const { data: organizationsData } = useGetOrganizationsQuery({});
+  const { data: locationsData } = useGetLocationsQuery({});
 
   useEffect(() => {
     const config = getFormConfig(formType);
