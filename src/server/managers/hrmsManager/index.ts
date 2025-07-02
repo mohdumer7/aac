@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { dbConnect } from '@/lib/mongoose';
 import {
   ManpowerRequisition,
   CandidateInformation,
