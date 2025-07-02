@@ -221,9 +221,7 @@ export default function NewHRMSFormPage() {
           } else {
             // Last step - redirect to workflows page
             console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
-            setTimeout(() => {
-              window.location.replace('/dashboard/hrms/workflows');
-            }, 100);
+            router.push('/dashboard/hrms/workflows');
             return;
           }
         } else {
