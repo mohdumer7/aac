@@ -190,7 +190,6 @@ export default function NewHRMSFormPage() {
       // Only proceed with workflow logic if this was successful
       if (result.success) {
         console.log('🟢 FORM SUBMIT: Form submitted successfully, checking workflow');
-        // NOTE: Don't show toast here - HRMSFormContainer already shows it
         
         // Check if this is part of a workflow
         if (isWorkflow && workflow.steps.length > 0) {
@@ -200,20 +199,23 @@ export default function NewHRMSFormPage() {
           updateStepData(currentStepIndex, result.data._id, data);
           
           if (currentStepIndex < workflow.steps.length - 1) {
-            // Automatically advance to next step without confirmation
-            console.log('🔄 WORKFLOW: Auto-advancing to next step');
-            workflow.navigateToStep(currentStepIndex + 1);
-            return; // Important: Don't continue to default navigation
+            // Immediately navigate to next step
+            console.log('🔄 WORKFLOW: Immediately advancing to next step');
+            const nextStepIndex = currentStepIndex + 1;
+            const nextStep = workflow.steps[nextStepIndex];
+            
+            // Force navigation to next step (always create new form, never edit)
+            router.push(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
+            return; // Important: Stop execution here
           } else {
-            // This is the last step in the workflow - show completion message
+            // This is the last step in the workflow
             toast.success('Workflow completed successfully! All forms have been submitted.');
-            // Redirect to workflow summary or dashboard
             router.push('/dashboard/hrms/workflows');
             return;
           }
         }
         
-        // Default navigation to view the submitted form (only if not in workflow)
+        // Default navigation (only if not in workflow)
         if (!isWorkflow) {
           router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
         }
