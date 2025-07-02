@@ -96,7 +96,9 @@ export default function HRMSLayout({
 
       {/* Main Content */}
       <main className="flex-1">
-        {children}
+        <WorkflowProvider>
+          {children}
+        </WorkflowProvider>
       </main>
     </div>
   );
