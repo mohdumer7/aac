@@ -70,6 +70,15 @@ import UserBenefits from "./master/UserBenefits.model"
 import UserEmploymentDetails from "./master/UserEmploymentDetails.model";
 import UserVisaDetails from "./master/UserVisaDetails.model";
 import UserIdentification from "./master/UserIdentification.model";
+import EmployeeInformation from "./hrms/EmployeeInformation.model";
+import AccommodationTransportConsentModel from "./hrms/AccommodationTransportConsent.model";
+import BeneficiaryDeclarationModel from "./hrms/BeneficiaryDeclaration.model";
+import CandidateInformationModel from "./hrms/CandidateInformation.model";
+import NonDisclosureAgreementModel from "./hrms/NonDisclosureAgreement.model";
+import BusinessTripRequestModel from "./hrms/BusinessTripRequest.model"
+import ManpowerRequisitionModel from "./hrms/ManpowerRequisition.model";
+import NewEmployeeJoiningModel from "./hrms/NewEmployeeJoining.model";
+import AssetsITAccessModel from "./hrms/AssetsITAccess.model";
 
 export { 
     Access, Department, Designation, EmployeeType, Organisation, Role, User, 
