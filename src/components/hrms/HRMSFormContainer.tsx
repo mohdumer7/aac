@@ -51,6 +51,7 @@ export default function HRMSFormContainer({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isManualSubmit, setIsManualSubmit] = useState(false); // Flag to track manual submissions
 
   const methods = useForm({
     defaultValues: useMemo(() => {
