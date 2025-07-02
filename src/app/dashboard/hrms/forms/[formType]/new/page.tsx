@@ -5,12 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
+import WorkflowNavigation from '@/components/hrms/WorkflowNavigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { getFormConfig } from '@/configs/hrms-forms';
 import { useCreateFormMutation, useSaveDraftMutation } from '@/services/endpoints/hrmsApi';
 import { useGetDepartmentsQuery, useGetAvailableApproversQuery, useGetCountriesQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormConfig } from '@/types/hrms';
+import { useWorkflow } from '@/contexts/WorkflowContext';
 
 export default function NewHRMSFormPage() {
   const params = useParams();
