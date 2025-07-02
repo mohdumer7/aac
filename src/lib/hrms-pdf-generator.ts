@@ -199,7 +199,24 @@ export class HRMSPDFGenerator {
     }
   }
 
-  // Manpower Requisition Template
+  // Create empty form template when no data is available
+  private static createEmptyFormTemplate(formType: string, organizationName = 'Acero Building Systems', logoUrl?: string): string {
+    const formTitle = formType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    return `
+      <div style="max-width: 210mm; margin: 0 auto; padding: 20px; background: white; font-family: 'Arial', sans-serif;">
+        ${this.createHeader(organizationName, logoUrl)}
+        <div style="margin-bottom: 30px; text-align: center; padding: 40px; border: 2px dashed #e5e7eb; border-radius: 10px;">
+          <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">${formTitle}</h2>
+          <p style="color: #6b7280; font-size: 16px; margin: 0;">No form data available to generate PDF</p>
+          <p style="color: #6b7280; font-size: 14px; margin: 10px 0 0 0;">Please ensure the form has been properly submitted with data.</p>
+        </div>
+        ${this.createFooter()}
+      </div>
+    `;
+  }
+
+  // Enhanced Manpower Requisition Template with actual data validation
   private static createManpowerRequisitionTemplate(data: any): string {
     return `
       <div style="margin-bottom: 30px;">
