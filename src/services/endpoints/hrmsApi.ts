@@ -410,6 +410,14 @@ export const hrmsApi = baseApi.injectEndpoints({
     getRoles: builder.query({
       query: () => 'master/roles',
       providesTags: ['Master']
+    }),
+
+    getCountries: builder.query({
+      query: (params = {}) => ({
+        url: 'master/countries',
+        params
+      }),
+      providesTags: ['Master']
     })
   }),
   overrideExisting: false
