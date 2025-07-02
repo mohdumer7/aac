@@ -30,6 +30,7 @@ export default function NewWorkflowPage() {
   
   const [selectedTemplate, setSelectedTemplate] = useState(templateParam || '');
   const [workflowData, setWorkflowData] = useState({
+    requestedBy: '',
     candidateName: '',
     employeeName: '',
     position: '',
