@@ -7,7 +7,7 @@ import { HRMSFormTypes } from '@/models/hrms';
 // GET /api/hrms/forms/[formType] - Generic endpoint for all form types
 export async function GET(
   request: NextRequest,
-  { params }: { params: { formType: string } }
+  { params }: { params: Promise<{ formType: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,8 +18,10 @@ export async function GET(
       );
     }
 
+    const { formType } = await params;
+
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
