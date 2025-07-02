@@ -275,6 +275,11 @@ export default function HRMSFormContainer({
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
                     {isDirty ? 'You have unsaved changes' : 'All changes saved'}
+                    {onSaveDraft && (
+                      <span className="ml-2 text-xs text-gray-500">
+                        (Auto-save: 10s after typing stops)
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex gap-2">
