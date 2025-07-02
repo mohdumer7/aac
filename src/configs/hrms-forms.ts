@@ -1303,5 +1303,58 @@ export const FORM_VALIDATION_SCHEMAS = {
     designation: { required: true },
     departmentSection: { required: true },
     reportingTo: { required: true }
+  },
+  [HRMSFormTypes.EMPLOYEE_INFORMATION]: {
+    empName: { required: true },
+    empId: { required: true },
+    designation: { required: true },
+    department: { required: true },
+    location: { required: true },
+    dateOfJoining: { required: true },
+    dateOfBirth: { required: true },
+    category: { required: true },
+    gender: { required: true },
+    nationality: { required: true },
+    maritalStatus: { required: true }
+  },
+  [HRMSFormTypes.ACCOMMODATION_TRANSPORT_CONSENT]: {
+    empName: { required: true },
+    empId: { required: true },
+    designation: { required: true },
+    department: { required: true },
+    dateOfJoining: { required: true },
+    accommodationPreference: { required: true },
+    transportationPreference: { required: true },
+    consentGiven: { required: true },
+    declarationDate: { required: true },
+    employeeSignature: { required: true }
+  },
+  [HRMSFormTypes.BENEFICIARY_DECLARATION]: {
+    empName: { required: true },
+    empId: { required: true },
+    designation: { required: true },
+    department: { required: true },
+    dateOfJoining: { required: true },
+    'primaryBeneficiary.name': { required: true },
+    'primaryBeneficiary.relationship': { required: true },
+    'primaryBeneficiary.percentage': { required: true, min: 1, max: 100 },
+    'primaryBeneficiary.contactDetails': { required: true },
+    declarationStatement: { required: true },
+    changeNotification: { required: true },
+    declarationDate: { required: true },
+    employeeSignature: { required: true }
+  },
+  [HRMSFormTypes.NON_DISCLOSURE_AGREEMENT]: {
+    employeeName: { required: true },
+    employeeId: { required: true },
+    designation: { required: true },
+    department: { required: true },
+    startDate: { required: true },
+    confidentialityPeriod: { required: true },
+    scopeOfConfidentiality: { required: true },
+    understandTerms: { required: true },
+    acknowledgeViolations: { required: true },
+    agreementDate: { required: true },
+    employeeSignature: { required: true }
   }
 };
