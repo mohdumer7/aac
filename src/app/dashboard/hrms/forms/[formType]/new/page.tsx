@@ -105,6 +105,47 @@ export default function NewHRMSFormPage() {
       
       if (result.success) {
         toast.success('Form submitted successfully!');
+        
+        // Check if this is part of a workflow
+        const workflowData = sessionStorage.getItem('workflowData');
+        if (workflowData) {
+          const parsedWorkflowData = JSON.parse(workflowData);
+          const currentStepIndex = parsedWorkflowData.template.steps.findIndex((step: any) => step.formType === formType);
+          
+          if (currentStepIndex < parsedWorkflowData.template.steps.length - 1) {
+            // There are more steps in the workflow
+            const nextStep = parsedWorkflowData.template.steps[currentStepIndex + 1];
+            
+            // Show option to continue to next step
+            const continueToNext = confirm(
+              `Form submitted successfully! Would you like to continue to the next step: ${nextStep.stepName}?`
+            );
+            
+            if (continueToNext) {
+              // Update workflow data with current form info
+              const updatedWorkflowData = {
+                ...parsedWorkflowData,
+                completedSteps: [...(parsedWorkflowData.completedSteps || []), {
+                  stepIndex: currentStepIndex,
+                  formType: formType,
+                  formId: result.data._id,
+                  completedAt: new Date().toISOString()
+                }]
+              };
+              sessionStorage.setItem('workflowData', JSON.stringify(updatedWorkflowData));
+              
+              // Navigate to next step
+              router.push(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
+              return;
+            }
+          } else {
+            // This is the last step in the workflow
+            toast.success('Workflow completed successfully!');
+            sessionStorage.removeItem('workflowData');
+          }
+        }
+        
+        // Default navigation to view the submitted form
         router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
       }
     } catch (error: any) {
