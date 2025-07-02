@@ -169,11 +169,12 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue={false}
             render={({ field: controllerField }) => (
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={field.name}
-                  checked={controllerField.value}
+                  checked={controllerField.value || false}
                   onCheckedChange={controllerField.onChange}
                   disabled={disabled || field.disabled}
                 />
