@@ -18,7 +18,56 @@ import User from '@/models/master/User.model';
 
 export class HRMSManager {
   
-  // Get model class based on form type
+  // Create or update form with workflow support
+  static async createOrUpdateForm(formType: HRMSFormTypes, formData: any, formId?: string) {
+    try {
+      await dbConnect();
+
+      const FormModel = this.getFormModel(formType);
+      if (!FormModel) {
+        return {
+          success: false,
+          message: `Invalid form type: ${formType}`
+        };
+      }
+
+      let form;
+      
+      if (formId) {
+        // Update existing form
+        form = await FormModel.findByIdAndUpdate(
+          formId,
+          {
+            ...formData,
+            updatedAt: new Date()
+          },
+          { new: true, runValidators: true }
+        );
+      } else {
+        // Create new form
+        form = new FormModel({
+          ...formData,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        await form.save();
+      }
+
+      return {
+        success: true,
+        data: form,
+        message: formId ? 'Form updated successfully' : 'Form created successfully'
+      };
+
+    } catch (error: any) {
+      console.error('Error creating/updating form:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to save form'
+      };
+    }
+  }
   private static getModelByFormType(formType: string) {
     const modelMap: { [key: string]: any } = {
       [HRMSFormTypes.MANPOWER_REQUISITION]: ManpowerRequisition,
