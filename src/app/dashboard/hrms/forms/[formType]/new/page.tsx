@@ -33,6 +33,7 @@ export default function NewHRMSFormPage() {
   const formType = params.formType as string;
   const [formId, setFormId] = useState<string | null>(null);
   const [formConfig, setFormConfig] = useState<HRMSFormConfig | null>(null);
+  const [showWorkflowCompletion, setShowWorkflowCompletion] = useState(false);
 
   // RTK Query mutations
   const [createForm, { isLoading }] = useCreateFormMutation();
