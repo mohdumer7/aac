@@ -440,7 +440,14 @@ export const {
   useGenerateFormPDFMutation,
 
   // Flow Designer
-  useSaveFlowDesignMutation
+  useSaveFlowDesignMutation,
+
+  // Workflow Management
+  useGetWorkflowInstancesQuery,
+  useGetWorkflowByIdQuery,
+  useCreateWorkflowInstanceMutation,
+  useUpdateWorkflowInstanceMutation,
+  useAdvanceWorkflowStepMutation
 } = hrmsApi;
 
 // Helper function to get form-specific hooks
