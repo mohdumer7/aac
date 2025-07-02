@@ -17,14 +17,25 @@ import { useWorkflow } from '@/contexts/WorkflowContext';
 export default function NewHRMSFormPage() {
   const params = useParams();
   const router = useRouter();
-  const formType = params.formType as string;
+  const searchParams = useSearchParams();
+  const isWorkflow = searchParams.get('workflow') === 'true';
   
-  const [formConfig, setFormConfig] = useState<HRMSFormConfig | null>(null);
-  const [formId, setFormId] = useState<string | null>(null);
+  // Workflow context
+  const workflow = useWorkflow();
+  const { 
+    currentStepIndex, 
+    getAllPreviousData, 
+    updateStepData,
+    getStepData 
+  } = workflow;
 
-  // API hooks
-  const [createForm, { isLoading: isCreating }] = useCreateFormMutation();
-  const [saveDraft, { isLoading: isSaving }] = useSaveDraftMutation();
+  const formType = params.formType as string;
+  const [formId, setFormId] = useState<string | null>(null);
+  const [formConfig, setFormConfig] = useState<HRMSFormConfig | null>(null);
+
+  // RTK Query mutations
+  const [createForm, { isLoading }] = useCreateFormMutation();
+  const [saveDraft] = useSaveDraftMutation();
   
   // Data for dropdowns
   const { data: departmentsData } = useGetDepartmentsQuery({});
