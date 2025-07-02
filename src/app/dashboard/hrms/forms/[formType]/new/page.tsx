@@ -340,6 +340,17 @@ export default function NewHRMSFormPage() {
           />
         ))}
       </HRMSFormContainer>
+
+      {/* Workflow Completion Dialog */}
+      {showWorkflowCompletion && (
+        <WorkflowCompletionDialog 
+          workflow={workflow}
+          onClose={() => {
+            setShowWorkflowCompletion(false);
+            router.push('/dashboard/hrms/workflows');
+          }}
+        />
+      )}
     </div>
   );
 }
