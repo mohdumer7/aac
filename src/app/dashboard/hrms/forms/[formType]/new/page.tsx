@@ -200,26 +200,20 @@ export default function NewHRMSFormPage() {
           updateStepData(currentStepIndex, result.data._id, data);
           
           if (currentStepIndex < workflow.steps.length - 1) {
-            // There are more steps in the workflow
-            const nextStep = workflow.steps[currentStepIndex + 1];
-            
-            // Show option to continue to next step
-            const continueToNext = confirm(
-              `Form submitted successfully! Would you like to continue to the next step: ${nextStep.stepName}?`
-            );
-            
-            if (continueToNext) {
-              // Navigate to next step
-              workflow.navigateToStep(currentStepIndex + 1);
-              return; // Important: Don't continue to default navigation
-            }
+            // Automatically advance to next step without confirmation
+            console.log('🔄 WORKFLOW: Auto-advancing to next step');
+            workflow.navigateToStep(currentStepIndex + 1);
+            return; // Important: Don't continue to default navigation
           } else {
-            // This is the last step in the workflow
-            toast.success('Workflow completed successfully!');
+            // This is the last step in the workflow - show completion message
+            toast.success('Workflow completed successfully! All forms have been submitted.');
+            // Redirect to workflow summary or dashboard
+            router.push('/dashboard/hrms/workflows');
+            return;
           }
         }
         
-        // Default navigation to view the submitted form (only if not in workflow or user declined to continue)
+        // Default navigation to view the submitted form (only if not in workflow)
         if (!isWorkflow) {
           router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
         }
