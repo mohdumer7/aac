@@ -115,6 +115,7 @@ export default function HRMSFormContainer({
   };
 
   const handleFormSubmit = async (data: any) => {
+    console.log('📝 FORM CONTAINER: handleFormSubmit called', { mode, hasHandlers: { onSubmit: !!onSubmit, onUpdate: !!onUpdate } });
     if (!onSubmit && !onUpdate) return;
 
     try {
@@ -123,12 +124,14 @@ export default function HRMSFormContainer({
       if (mode === 'create' || mode === 'edit') {
         const handler = mode === 'create' ? onSubmit : onUpdate;
         if (handler) {
+          console.log('📝 FORM CONTAINER: Calling handler function');
           await handler(data);
           setIsDraft(false);
           toast.success(`Form ${mode === 'create' ? 'submitted' : 'updated'} successfully`);
         }
       }
     } catch (error: any) {
+      console.error('📝 FORM CONTAINER: Handler failed', error);
       toast.error(`Failed to ${mode === 'create' ? 'submit' : 'update'} form: ` + error.message);
     } finally {
       setIsSubmitting(false);
