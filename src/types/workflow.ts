@@ -108,7 +108,7 @@ export const HRMS_WORKFLOW_TEMPLATES = {
       },
       {
         id: 'interview_process',
-        formType: HRMSFormTypes.EMPLOYEE_INFORMATION, // For detailed evaluation and interview notes
+        formType: HRMSFormTypes.BUSINESS_TRIP_REQUEST, // Temporary - for interview evaluation notes
         stepName: 'Interview & Evaluation',
         stepOrder: 3,
         isRequired: true,
