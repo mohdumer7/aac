@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
