@@ -209,7 +209,7 @@ export default function NewHRMSFormPage() {
             if (continueToNext) {
               // Navigate to next step
               workflow.navigateToStep(currentStepIndex + 1);
-              return;
+              return; // Important: Don't continue to default navigation
             }
           } else {
             // This is the last step in the workflow
@@ -217,8 +217,10 @@ export default function NewHRMSFormPage() {
           }
         }
         
-        // Default navigation to view the submitted form
-        router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
+        // Default navigation to view the submitted form (only if not in workflow or user declined to continue)
+        if (!isWorkflow) {
+          router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
+        }
       }
     } catch (error: any) {
       console.error('🔴 FORM SUBMIT: Failed', error);
