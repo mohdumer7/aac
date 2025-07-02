@@ -218,6 +218,14 @@ export class HRMSPDFGenerator {
 
   // Enhanced Manpower Requisition Template with actual data validation
   private static createManpowerRequisitionTemplate(data: any): string {
+    // Validate that we have actual data
+    if (!data || typeof data !== 'object') {
+      return this.createEmptyFormTemplate('manpower_requisition');
+    }
+
+    // Extract form data - handle nested structure if needed
+    const formData = data.formData || data;
+    
     return `
       <div style="margin-bottom: 30px;">
         <h2 style="color: #1f2937; font-size: 20px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">
@@ -227,51 +235,57 @@ export class HRMSPDFGenerator {
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
           <tr>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold; width: 30%;">MR Number:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.mrNumber || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.mrNumber || formData.requestId || 'Auto-generated'}</td>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold; width: 30%;">Date:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.requestDate ? new Date(data.requestDate).toLocaleDateString() : 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.requestDate ? new Date(formData.requestDate).toLocaleDateString() : new Date().toLocaleDateString()}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Department:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.department?.name || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${this.getDisplayValue(formData.department)}</td>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Location:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.location?.name || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${this.getDisplayValue(formData.location || formData.workLocation)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Position Title:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.positionTitle || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.positionTitle || formData.requestedPosition || 'N/A'}</td>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">No. of Positions:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.numberOfPositions || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.numberOfPositions || formData.noOfPositions || '1'}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Employment Type:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.employmentType || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.employmentType || 'N/A'}</td>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Urgency:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.urgency || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.urgency || formData.priority || 'Normal'}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Reporting To:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.reportingTo?.name || 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${this.getDisplayValue(formData.reportingTo)}</td>
             <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Expected Join Date:</td>
-            <td style="padding: 8px; border: 1px solid #d1d5db;">${data.expectedJoinDate ? new Date(data.expectedJoinDate).toLocaleDateString() : 'N/A'}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.expectedJoinDate ? new Date(formData.expectedJoinDate).toLocaleDateString() : 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Requested By:</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${this.getDisplayValue(formData.requestedBy)}</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Vacancy Reason:</td>
+            <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.vacancyReason || 'N/A'}</td>
           </tr>
         </table>
 
         <div style="margin-bottom: 20px;">
           <h3 style="color: #374151; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">Job Description & Requirements</h3>
           <p style="margin-bottom: 10px;"><strong>Job Description:</strong></p>
-          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; margin-bottom: 15px;">
-            ${data.jobDescription || 'N/A'}
+          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; margin-bottom: 15px; min-height: 60px;">
+            ${formData.jobDescription || 'N/A'}
           </div>
           
           <p style="margin-bottom: 10px;"><strong>Required Qualifications:</strong></p>
-          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; margin-bottom: 15px;">
-            ${data.requiredQualifications || 'N/A'}
+          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; margin-bottom: 15px; min-height: 60px;">
+            ${formData.requiredQualifications || formData.qualifications || 'N/A'}
           </div>
 
           <p style="margin-bottom: 10px;"><strong>Preferred Qualifications:</strong></p>
-          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb;">
-            ${data.preferredQualifications || 'N/A'}
+          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; min-height: 60px;">
+            ${formData.preferredQualifications || formData.preferredSkills || 'N/A'}
           </div>
         </div>
 
@@ -280,19 +294,19 @@ export class HRMSPDFGenerator {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold; width: 50%;">Budget Allocated:</td>
-              <td style="padding: 8px; border: 1px solid #d1d5db;">${data.budgetAllocated || 'N/A'}</td>
+              <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.budgetAllocated || 'N/A'}</td>
             </tr>
             <tr>
               <td style="padding: 8px; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: bold;">Salary Range:</td>
-              <td style="padding: 8px; border: 1px solid #d1d5db;">${data.salaryRange || 'N/A'}</td>
+              <td style="padding: 8px; border: 1px solid #d1d5db;">${formData.salaryRange || formData.expectedSalary || 'N/A'}</td>
             </tr>
           </table>
         </div>
 
         <div style="margin-bottom: 20px;">
           <h3 style="color: #374151; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">Justification</h3>
-          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb;">
-            ${data.justification || 'N/A'}
+          <div style="border: 1px solid #d1d5db; padding: 10px; background-color: #f9fafb; min-height: 60px;">
+            ${formData.justification || formData.businessJustification || 'N/A'}
           </div>
         </div>
       </div>
