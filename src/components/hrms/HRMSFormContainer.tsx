@@ -24,6 +24,7 @@ interface HRMSFormContainerProps {
   formConfig: HRMSFormConfig;
   initialData?: Partial<HRMSFormDocument>;
   mode: 'create' | 'edit' | 'view';
+  disabledFields?: string[];
   onSaveDraft?: (data: any) => Promise<any>;
   onSubmit?: (data: any) => Promise<any>;
   onUpdate?: (data: any) => Promise<any>;
