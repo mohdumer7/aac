@@ -46,6 +46,16 @@ export default function NewHRMSFormPage() {
         totalSteps: workflow.steps.length,
         expectedFormType: workflow.steps[currentStepIndex]?.formType
       });
+      
+      // Check if current step has a formId (completed step)
+      const currentStep = workflow.steps[currentStepIndex];
+      if (currentStep?.formId) {
+        console.log('📝 WORKFLOW: Current step has existing form, setting formId', currentStep.formId);
+        setFormId(currentStep.formId);
+      } else {
+        console.log('📝 WORKFLOW: Current step is new, clearing formId');
+        setFormId(null);
+      }
     }
   }, [isWorkflow, formType, currentStepIndex, workflow.steps.length]);
 
