@@ -164,7 +164,7 @@ export default function NewHRMSFormPage() {
   };
 
   const handleSubmit = async (data: any) => {
-    console.log('🟢 FORM SUBMIT: handleSubmit called', { formId, formType });
+    console.log('🟢 FORM SUBMIT: handleSubmit called', { formId, formType, isWorkflow });
     try {
       let result;
       
@@ -191,35 +191,32 @@ export default function NewHRMSFormPage() {
       if (result.success) {
         console.log('🟢 FORM SUBMIT: Form submitted successfully, checking workflow');
         
-        // Check if this is part of a workflow
+        // Check if this is part of a workflow - HANDLE IMMEDIATELY
         if (isWorkflow && workflow.steps.length > 0) {
-          console.log('🟢 FORM SUBMIT: Workflow detected, processing continuation');
+          console.log('🟢 FORM SUBMIT: Workflow detected - immediate processing');
           
           // Update current step data
           updateStepData(currentStepIndex, result.data._id, data);
           
           if (currentStepIndex < workflow.steps.length - 1) {
-            // Immediately navigate to next step
-            console.log('🔄 WORKFLOW: Immediately advancing to next step');
+            // Get next step info
             const nextStepIndex = currentStepIndex + 1;
             const nextStep = workflow.steps[nextStepIndex];
             
-            // Update workflow context to next step (but don't use its navigation)
-            // Instead of calling workflow.navigateToStep, manually navigate
-            // to avoid any potential edit page issues
+            console.log('🔄 WORKFLOW: Advancing to step', nextStepIndex, nextStep);
             
-            // Force direct navigation to next step (always create new form)
-            router.push(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
-            return; // Important: Stop execution here
+            // IMMEDIATE redirect - no delays, no other logic
+            window.location.href = `/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`;
+            return; // Stop all further execution
           } else {
-            // This is the last step in the workflow
-            toast.success('Workflow completed successfully! All forms have been submitted.');
-            router.push('/dashboard/hrms/workflows');
+            // Last step - redirect to workflows page
+            console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
+            window.location.href = '/dashboard/hrms/workflows';
             return;
           }
         }
         
-        // Default navigation (only if not in workflow)
+        // Only if NOT in workflow mode
         if (!isWorkflow) {
           router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
         }
