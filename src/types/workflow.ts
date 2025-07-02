@@ -108,7 +108,7 @@ export const HRMS_WORKFLOW_TEMPLATES = {
       },
       {
         id: 'interview_process',
-        formType: HRMSFormTypes.CANDIDATE_INFORMATION, // Extended for interview details
+        formType: HRMSFormTypes.EMPLOYEE_INFORMATION, // For detailed evaluation and interview notes
         stepName: 'Interview & Evaluation',
         stepOrder: 3,
         isRequired: true,
@@ -117,7 +117,7 @@ export const HRMS_WORKFLOW_TEMPLATES = {
       },
       {
         id: 'hiring_decision',
-        formType: HRMSFormTypes.CANDIDATE_INFORMATION, // Final decision
+        formType: HRMSFormTypes.NEW_EMPLOYEE_JOINING, // For hiring decision and joining details
         stepName: 'Hiring Decision',
         stepOrder: 4,
         isRequired: true,
@@ -126,7 +126,7 @@ export const HRMS_WORKFLOW_TEMPLATES = {
       },
       {
         id: 'onboarding_prep',
-        formType: HRMSFormTypes.NEW_EMPLOYEE_JOINING,
+        formType: HRMSFormTypes.ASSETS_IT_ACCESS, // For onboarding preparation - IT setup, etc.
         stepName: 'Onboarding Preparation',
         stepOrder: 5,
         isRequired: true,
