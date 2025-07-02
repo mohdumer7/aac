@@ -114,8 +114,24 @@ export default function HRMSFormContainer({
     }
   };
 
-  const handleFormSubmit = async (data: any) => {
-    console.log('📝 FORM CONTAINER: handleFormSubmit called', { mode, hasHandlers: { onSubmit: !!onSubmit, onUpdate: !!onUpdate } });
+  const handleFormSubmit = async (data: any, event?: React.BaseSyntheticEvent) => {
+    console.log('📝 FORM CONTAINER: handleFormSubmit called', { 
+      mode, 
+      hasHandlers: { onSubmit: !!onSubmit, onUpdate: !!onUpdate },
+      eventType: event?.type,
+      submitterName: event?.nativeEvent?.submitter?.name,
+      submitterType: event?.nativeEvent?.submitter?.type
+    });
+    
+    // Check if this was triggered by the actual submit button, not auto-save
+    if (event && event.nativeEvent?.submitter) {
+      const submitter = event.nativeEvent.submitter as HTMLButtonElement;
+      if (submitter.type !== 'submit') {
+        console.log('📝 FORM CONTAINER: Ignoring non-submit button trigger');
+        return;
+      }
+    }
+    
     if (!onSubmit && !onUpdate) return;
 
     try {
