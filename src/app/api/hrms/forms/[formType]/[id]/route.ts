@@ -94,7 +94,7 @@ export async function PUT(
 // DELETE /api/hrms/forms/[formType]/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { formType: string; id: string } }
+  { params }: { params: Promise<{ formType: string; id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -105,8 +105,10 @@ export async function DELETE(
       );
     }
 
+    const { formType, id } = await params;
+
     // Validate form type
-    if (!Object.values(HRMSFormTypes).includes(params.formType as any)) {
+    if (!Object.values(HRMSFormTypes).includes(formType as any)) {
       return NextResponse.json(
         { success: false, message: 'Invalid form type' },
         { status: 400 }
@@ -114,8 +116,8 @@ export async function DELETE(
     }
 
     const result = await HRMSManager.deleteForm(
-      params.formType,
-      params.id,
+      formType,
+      id,
       session.user.id
     );
 
@@ -125,7 +127,7 @@ export async function DELETE(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error deleting ${params.formType}:`, error);
+    console.error(`Error deleting form:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
