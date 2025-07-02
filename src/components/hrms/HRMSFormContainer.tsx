@@ -53,7 +53,18 @@ export default function HRMSFormContainer({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const methods = useForm({
-    defaultValues: initialData || {},
+    defaultValues: useMemo(() => {
+      const defaults = { ...initialData };
+      // Ensure all fields have default values to prevent controlled/uncontrolled issues
+      if (defaults) {
+        Object.keys(defaults).forEach(key => {
+          if (defaults[key] === undefined || defaults[key] === null) {
+            defaults[key] = '';
+          }
+        });
+      }
+      return defaults || {};
+    }, [initialData]),
     mode: 'onChange'
   });
 
