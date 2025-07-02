@@ -71,7 +71,7 @@ export default function HRMSFormContainer({
 
   const { handleSubmit, formState: { errors, isDirty }, watch } = methods;
 
-  // Auto-save draft functionality with proper debouncing
+  // Auto-save draft functionality with smart debouncing (only save when user stops typing)
   useEffect(() => {
     if (mode === 'create' || mode === 'edit') {
       let timeoutId: NodeJS.Timeout | null = null;
@@ -88,11 +88,11 @@ export default function HRMSFormContainer({
             clearTimeout(timeoutId);
           }
           
-          // Set new timeout for auto-save
+          // Set new timeout for auto-save - longer delay to reduce frequency
           timeoutId = setTimeout(() => {
-            console.log('⏰ AUTO-SAVE: Executing auto-save');
+            console.log('⏰ AUTO-SAVE: Executing auto-save after user stopped typing');
             handleSaveDraft(value);
-          }, 3000); // Increased to 3 seconds to reduce frequency
+          }, 10000); // 10 seconds - only save when user stops typing for 10 seconds
         }
       });
 
