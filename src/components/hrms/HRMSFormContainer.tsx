@@ -104,11 +104,18 @@ export default function HRMSFormContainer({
 
     try {
       setIsSaving(true);
+      console.log('💾 AUTO-SAVE: Starting draft save, ensuring no form submission');
+      
+      // Explicitly prevent any form submission during auto-save
+      setIsManualSubmit(false);
+      
       const formData = data || methods.getValues();
       await onSaveDraft(formData);
       setLastSaved(new Date());
       toast.success('Draft saved successfully');
+      console.log('💾 AUTO-SAVE: Draft saved successfully, no submission triggered');
     } catch (error: any) {
+      console.error('💾 AUTO-SAVE: Failed', error);
       toast.error('Failed to save draft: ' + error.message);
     } finally {
       setIsSaving(false);
