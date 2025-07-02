@@ -461,6 +461,8 @@ export const {
   useGetRolesQuery,
   useGetUsersQuery,
   useGetCountriesQuery,
+  useGetOrganizationsQuery,
+  useGetLocationsQuery,
 
   // Approval Instances
   useGetApprovalInstancesQuery,
