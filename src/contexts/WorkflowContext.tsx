@@ -100,21 +100,6 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setFormData(workflowData.formData || {});
   };
 
-  // Function to sync current step based on form type
-  const syncCurrentStepByFormType = (currentFormType: string) => {
-    if (steps.length > 0) {
-      const stepIndex = steps.findIndex(step => step.formType === currentFormType);
-      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        console.log('🔄 WORKFLOW: Syncing current step based on form type', { 
-          currentFormType, 
-          oldStepIndex: currentStepIndex, 
-          newStepIndex: stepIndex 
-        });
-        setCurrentStepIndex(stepIndex);
-      }
-    }
-  };
-
   const updateStepData = (stepIndex: number, formId: string, data: any) => {
     console.log('📝 WORKFLOW: Updating step data', { stepIndex, formId, data });
     
