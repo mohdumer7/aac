@@ -27,6 +27,7 @@ import { useWorkflow } from '@/contexts/WorkflowContext';
 
 export default function NewWorkflowPage() {
   const router = useRouter();
+  const { initializeWorkflow } = useWorkflow();
   const searchParams = useSearchParams();
   const templateParam = searchParams.get('template');
   
