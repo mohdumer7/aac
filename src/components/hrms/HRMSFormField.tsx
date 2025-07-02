@@ -78,6 +78,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false,
               min: field.validation?.min ? {
@@ -92,6 +93,7 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
             render={({ field: controllerField }) => (
               <Input
                 {...controllerField}
+                value={controllerField.value || ''}
                 type="number"
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
