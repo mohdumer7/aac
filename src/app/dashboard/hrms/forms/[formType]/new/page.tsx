@@ -170,18 +170,20 @@ export default function NewHRMSFormPage() {
       
       // First, ensure the form is saved with the submitted data
       if (formId) {
-        // Update existing form and mark as submitted (use pending_department_head instead of submitted)
+        // Update existing form and mark as submitted (use appropriate status for each form type)
         console.log('🟢 FORM SUBMIT: Updating existing form for submission');
+        const submissionStatus = formType === 'manpower_requisition' ? 'pending_department_head' : 'submitted';
         result = await createForm({ 
           formType, 
-          data: { ...data, isDraft: false, status: 'pending_department_head' } 
+          data: { ...data, isDraft: false, status: submissionStatus } 
         }).unwrap();
       } else {
-        // Create new form and mark as submitted (use pending_department_head instead of submitted)
+        // Create new form and mark as submitted (use appropriate status for each form type)
         console.log('🟢 FORM SUBMIT: Creating new form for submission');
+        const submissionStatus = formType === 'manpower_requisition' ? 'pending_department_head' : 'submitted';
         result = await createForm({ 
           formType, 
-          data: { ...data, isDraft: false, status: 'pending_department_head' } 
+          data: { ...data, isDraft: false, status: submissionStatus } 
         }).unwrap();
       }
       
