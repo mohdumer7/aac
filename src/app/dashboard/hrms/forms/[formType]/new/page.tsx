@@ -119,8 +119,9 @@ export default function NewHRMSFormPage() {
           };
         }
         
-        if (field.name === 'nationality') {
+        if (field.name === 'nationality' || field.name === 'familyDetails.fatherNationality' || field.name === 'familyDetails.motherNationality' || field.name === 'familyDetails.spouseNationality') {
           console.log('🌍 COUNTRIES: Loading nationality options', {
+            fieldName: field.name,
             countriesDataExists: !!countriesData,
             countriesCount: countriesData?.data?.length || 0
           });
@@ -129,6 +130,34 @@ export default function NewHRMSFormPage() {
             options: countriesData?.data?.map((country: any) => ({
               label: country.name,
               value: country._id  // Use ObjectId instead of name
+            })) || []
+          };
+        }
+
+        if (field.name === 'designation') {
+          console.log('👔 ROLES: Loading designation options', {
+            rolesDataExists: !!rolesData,
+            rolesCount: rolesData?.data?.length || 0
+          });
+          return {
+            ...field,
+            options: rolesData?.data?.map((role: any) => ({
+              label: role.name,
+              value: role._id
+            })) || []
+          };
+        }
+
+        if (field.name === 'location') {
+          console.log('📍 LOCATIONS: Loading location options', {
+            locationsDataExists: !!locationsData,
+            locationsCount: locationsData?.data?.length || 0
+          });
+          return {
+            ...field,
+            options: locationsData?.data?.map((location: any) => ({
+              label: location.name,
+              value: location._id
             })) || []
           };
         }
