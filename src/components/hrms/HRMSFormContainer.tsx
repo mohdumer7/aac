@@ -280,6 +280,10 @@ export default function HRMSFormContainer({
                     <Button
                       type="submit"
                       disabled={isSubmitting || isLoading || hasErrors}
+                      onClick={() => {
+                        console.log('🔘 SUBMIT BUTTON: Clicked - setting manual submit flag');
+                        setIsManualSubmit(true);
+                      }}
                     >
                       <SendIcon className="h-4 w-4 mr-2" />
                       {isSubmitting 
