@@ -201,7 +201,8 @@ export const WorkflowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     navigateToStep,
     getStepData,
     getAllPreviousData,
-    isStepAccessible
+    isStepAccessible,
+    syncCurrentStepByFormType
   };
 
   return (
