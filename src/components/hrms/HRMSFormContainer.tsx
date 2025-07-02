@@ -90,9 +90,11 @@ export default function HRMSFormContainer({
           
           // Set new timeout for auto-save - longer delay to reduce frequency
           timeoutId = setTimeout(() => {
-            console.log('⏰ AUTO-SAVE: Executing auto-save after user stopped typing');
+            console.log('⏰ AUTO-SAVE: Executing auto-save after user stopped typing for 10 seconds');
             handleSaveDraft(value);
           }, 10000); // 10 seconds - only save when user stops typing for 10 seconds
+          
+          console.log('⏰ AUTO-SAVE: Debounce timeout set for 10 seconds');
         }
       });
 
