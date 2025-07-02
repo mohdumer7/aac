@@ -73,205 +73,183 @@ class HRMSAPITester:
             })
             return False, None
 
-    def test_approval_flow_endpoints(self):
-        """Test HRMS approval flow endpoints"""
-        print("\n=== Testing HRMS Approval Flow Endpoints ===")
+    def test_workflow_endpoints(self):
+        """Test HRMS workflow endpoints"""
+        print("\n=== Testing HRMS Workflow Endpoints ===")
         
-        # Test GET approval flows
+        # Test GET workflows
         self.run_test(
-            "Get Approval Flows",
+            "Get Workflows",
             "GET",
-            "hrms/approval-flows",
+            "hrms/workflows",
             200
         )
         
-        # Test POST create approval flow
-        flow_data = {
-            "flowName": f"Test Flow {datetime.now().strftime('%Y%m%d%H%M%S')}",
-            "flowDescription": "Test flow created by API test",
-            "formType": "manpower_requisition",
-            "isActive": True,
-            "isDefault": False,
+        # Test POST create workflow
+        workflow_data = {
+            "workflowType": "recruitment",
+            "metadata": {
+                "requestedBy": "Test User",
+                "requestedById": "user123",
+                "position": "Software Developer",
+                "department": "Engineering",
+                "departmentId": "dept123",
+                "expectedEndDate": "2025-03-01",
+                "comments": "Test workflow created by API test"
+            },
+            "currentStepIndex": 0,
             "steps": [
                 {
-                    "stepOrder": 1,
-                    "stepName": "Department Head Approval",
-                    "approverType": "department_head",
+                    "stepIndex": 0,
+                    "stepName": "Manpower Requisition",
+                    "formType": "manpower_requisition",
+                    "status": "not_started",
                     "isRequired": True
                 },
                 {
-                    "stepOrder": 2,
-                    "stepName": "HR Manager Approval",
-                    "approverType": "role_based",
+                    "stepIndex": 1,
+                    "stepName": "Candidate Information",
+                    "formType": "candidate_information",
+                    "status": "not_started",
                     "isRequired": True
                 }
             ]
         }
         
         success, response = self.run_test(
-            "Create Approval Flow",
+            "Create Workflow",
             "POST",
-            "hrms/approval-flows",
+            "hrms/workflows",
             201,
-            data=flow_data
+            data=workflow_data
         )
         
-        # If flow creation succeeded, test other endpoints with the created flow
+        # If workflow creation succeeded, test other endpoints with the created workflow
         if success and response and response.status_code == 201:
             try:
-                flow_id = response.json()["data"]["_id"]
+                workflow_id = response.json()["data"]["_id"]
                 
-                # Test GET flow by ID
+                # Test GET workflow by ID
                 self.run_test(
-                    "Get Approval Flow by ID",
+                    "Get Workflow by ID",
                     "GET",
-                    f"hrms/approval-flows/{flow_id}",
+                    f"hrms/workflows/{workflow_id}",
                     200
                 )
                 
-                # Test PUT update flow
-                update_data = {
-                    "flowDescription": "Updated test flow description"
-                }
-                self.run_test(
-                    "Update Approval Flow",
-                    "PUT",
-                    f"hrms/approval-flows/{flow_id}",
-                    200,
-                    data=update_data
-                )
-                
-                # Test flow design save endpoint
-                design_data = {
-                    "flowDesign": {
-                        "nodes": [
-                            {
-                                "id": "start",
-                                "type": "start",
-                                "position": {"x": 250, "y": 25},
-                                "data": {"label": "Start"}
-                            },
-                            {
-                                "id": "step-1",
-                                "type": "approval",
-                                "position": {"x": 250, "y": 150},
-                                "data": {
-                                    "label": "Department Head Approval",
-                                    "stepOrder": 1,
-                                    "approverType": "department_head",
-                                    "isRequired": True
-                                }
-                            },
-                            {
-                                "id": "step-2",
-                                "type": "approval",
-                                "position": {"x": 250, "y": 275},
-                                "data": {
-                                    "label": "HR Manager Approval",
-                                    "stepOrder": 2,
-                                    "approverType": "role_based",
-                                    "isRequired": True
-                                }
-                            },
-                            {
-                                "id": "end",
-                                "type": "end",
-                                "position": {"x": 250, "y": 400},
-                                "data": {"label": "End"}
-                            }
-                        ],
-                        "edges": [
-                            {
-                                "id": "edge-start-step1",
-                                "source": "start",
-                                "target": "step-1"
-                            },
-                            {
-                                "id": "edge-step1-step2",
-                                "source": "step-1",
-                                "target": "step-2"
-                            },
-                            {
-                                "id": "edge-step2-end",
-                                "source": "step-2",
-                                "target": "end"
-                            }
-                        ]
+                # Test workflow advance endpoint
+                advance_data = {
+                    "currentStepIndex": 0,
+                    "formId": "form123",
+                    "formData": {
+                        "position": "Software Developer",
+                        "department": "Engineering",
+                        "jobDescription": "Test job description"
                     }
                 }
                 
                 self.run_test(
-                    "Save Flow Design",
+                    "Advance Workflow",
                     "POST",
-                    f"hrms/approval-flows/{flow_id}/design",
+                    f"hrms/workflows/{workflow_id}/advance",
                     200,
-                    data=design_data
+                    data=advance_data
                 )
                 
-                # Test flow test endpoint
-                test_data = {
-                    "sampleFormData": {
-                        "department": "sample-department-id",
-                        "submittedBy": "sample-user-id"
-                    }
-                }
-                
-                self.run_test(
-                    "Test Approval Flow",
-                    "POST",
-                    f"hrms/approval-flows/{flow_id}/test",
-                    200,
-                    data=test_data
-                )
-                
-                # Test DELETE flow
-                self.run_test(
-                    "Delete Approval Flow",
-                    "DELETE",
-                    f"hrms/approval-flows/{flow_id}",
-                    200
-                )
             except Exception as e:
-                print(f"Error in flow tests: {str(e)}")
+                print(f"Error in workflow tests: {str(e)}")
+    
+    def test_form_endpoints(self):
+        """Test HRMS form endpoints"""
+        print("\n=== Testing HRMS Form Endpoints ===")
         
-    def test_pdf_generation_endpoint(self):
-        """Test PDF generation endpoint"""
-        print("\n=== Testing PDF Generation Endpoint ===")
+        # Test GET form types
+        form_types = ["manpower_requisition", "candidate_information"]
         
-        # First, get a list of forms to find one to generate PDF for
+        for form_type in form_types:
+            self.run_test(
+                f"Get {form_type} Forms",
+                "GET",
+                f"hrms/forms/{form_type}",
+                200
+            )
+        
+        # Test POST create form
+        form_data = {
+            "position": "Software Developer",
+            "department": "Engineering",
+            "departmentId": "dept123",
+            "jobDescription": "Test job description",
+            "requiredSkills": ["JavaScript", "React", "Node.js"],
+            "experienceRequired": "3-5 years",
+            "educationRequired": "Bachelor's degree",
+            "requestedBy": "Test User",
+            "requestedById": "user123",
+            "isDraft": False
+        }
+        
         success, response = self.run_test(
-            "Get Forms List",
-            "GET",
+            "Create Form",
+            "POST",
             "hrms/forms/manpower_requisition",
-            200
+            201,
+            data=form_data
         )
         
-        if success and response and response.status_code == 200:
+        # If form creation succeeded, test other endpoints with the created form
+        if success and response and response.status_code == 201:
             try:
-                forms_data = response.json()
-                if forms_data.get("data") and forms_data["data"].get("forms") and len(forms_data["data"]["forms"]) > 0:
-                    # Use the first form for PDF generation test
-                    form = forms_data["data"]["forms"][0]
-                    form_id = form["_id"]
-                    
-                    # Test PDF generation endpoint
-                    pdf_data = {
-                        "includeApprovalHistory": True,
-                        "organizationLogo": "https://example.com/logo.png",
-                        "organizationName": "Test Organization"
-                    }
-                    
-                    self.run_test(
-                        "Generate PDF Data",
-                        "POST",
-                        f"hrms/forms/manpower_requisition/{form_id}/generate-pdf",
-                        200,
-                        data=pdf_data
-                    )
-                else:
-                    print("⚠️ No forms found to test PDF generation")
+                form_id = response.json()["data"]["_id"]
+                
+                # Test GET form by ID
+                self.run_test(
+                    "Get Form by ID",
+                    "GET",
+                    f"hrms/forms/manpower_requisition/{form_id}",
+                    200
+                )
+                
+                # Test save draft endpoint
+                draft_data = {
+                    "position": "Senior Software Developer",
+                    "department": "Engineering",
+                    "departmentId": "dept123",
+                    "jobDescription": "Updated job description",
+                    "isDraft": True
+                }
+                
+                self.run_test(
+                    "Save Form Draft",
+                    "POST",
+                    f"hrms/forms/manpower_requisition/{form_id}/save-draft",
+                    200,
+                    data=draft_data
+                )
+                
+                # Test submit form endpoint
+                submit_data = {
+                    "position": "Senior Software Developer",
+                    "department": "Engineering",
+                    "departmentId": "dept123",
+                    "jobDescription": "Final job description",
+                    "requiredSkills": ["JavaScript", "React", "Node.js", "TypeScript"],
+                    "experienceRequired": "3-5 years",
+                    "educationRequired": "Bachelor's degree",
+                    "requestedBy": "Test User",
+                    "requestedById": "user123",
+                    "isDraft": False
+                }
+                
+                self.run_test(
+                    "Submit Form",
+                    "POST",
+                    f"hrms/forms/manpower_requisition/{form_id}/submit",
+                    200,
+                    data=submit_data
+                )
+                
             except Exception as e:
-                print(f"Error in PDF generation test: {str(e)}")
+                print(f"Error in form tests: {str(e)}")
         
     def print_summary(self):
         """Print test summary"""
@@ -305,8 +283,8 @@ def main():
     tester = HRMSAPITester(base_url)
     
     # Run tests
-    tester.test_approval_flow_endpoints()
-    tester.test_pdf_generation_endpoint()
+    tester.test_workflow_endpoints()
+    tester.test_form_endpoints()
     
     # Print summary
     success = tester.print_summary()
