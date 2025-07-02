@@ -181,13 +181,34 @@ Both the **Visual Flow Designer** and **PDF Generation Service** have been succe
   - Prevents mode changes during intermediate saves
   - Maintains form editing state while updating URL for future saves
 
-### 🎯 **Issue Fixed**: Duplicate MongoDB Index Warning
-- **Problem**: `Duplicate schema index on {"empId":1}` warning
-- **Root Cause**: Both field-level `unique: true` and schema-level `index()` definitions
+### 🎯 **Issue Fixed**: Draft Save Validation Errors ✅
+- **Problem**: Required field validation triggered even for draft saves (`isDraft: true`)
+- **Root Cause**: Mongoose `.save()` was running validation regardless of draft status
 - **Solution**: 
-  - Removed field-level unique constraint
-  - Added proper schema-level unique sparse index
-  - Eliminated duplicate index warnings
+  - Updated `createForm` and `updateForm` methods to skip validation for drafts
+  - Added `validateBeforeSave: false` for draft operations
+  - Required fields now only validated on final submission, not intermediate saves
+
+### 🎯 **Issue Fixed**: Controlled/Uncontrolled Input Warnings ✅
+- **Problem**: React warnings about inputs switching between controlled/uncontrolled states
+- **Root Cause**: Missing `defaultValue` props and inconsistent value handling in form fields
+- **Solution**: 
+  - Added proper `defaultValue` to all Controller components
+  - Ensured consistent value handling with `value={controllerField.value || ''}` pattern
+  - Fixed all field types: text, number, textarea, select, checkbox, radio, date
+
+### 🎯 **Issue Fixed**: Auto-save Frequency & Performance ✅
+- **Problem**: Auto-save triggering on every keystroke causing performance issues
+- **Root Cause**: Improper debouncing implementation not clearing previous timeouts
+- **Solution**: 
+  - Fixed debouncing logic with proper timeout clearing
+  - Increased debounce delay from 2s to 3s to reduce API calls
+  - Proper cleanup in useEffect return function
+
+### 🎯 **Issue Fixed**: MongoDB Duplicate Index Warning ✅
+- **Problem**: `Duplicate schema index on {"empId":1}` warning
+- **Root Cause**: Both field-level and schema-level index definitions
+- **Solution**: Completely removed redundant schema index declaration
 
 ### 🎯 **Enhancement**: Workflow Continuation & Draft Management
 - **Feature Added**: Automatic workflow step progression
@@ -200,7 +221,10 @@ Both the **Visual Flow Designer** and **PDF Generation Service** have been succe
 
 ### ✅ **System Status**: All Critical Issues Resolved
 - Master data APIs functional ✅
+- Draft saves working without validation errors ✅
 - Form intermediate saves working without mode changes ✅  
+- No controlled/uncontrolled input warnings ✅
+- Auto-save properly debounced ✅
 - Search-enabled dropdowns implemented ✅
 - Workflow continuation logic implemented ✅
 - Next.js 15 API compatibility achieved ✅
