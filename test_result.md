@@ -219,9 +219,20 @@ Both the **Visual Flow Designer** and **PDF Generation Service** have been succe
   - Draft forms remain accessible and editable anytime
   - Workflow progress tracked through completed steps
 
+### 🎯 **CRITICAL BUG FIXED**: Auto-save Triggering Workflow Alerts ✅
+- **Problem**: "Form submitted successfully! Would you like to continue to the next step?" alert appearing during auto-save operations
+- **Root Cause**: Confusion between draft save and form submission logic 
+- **Solution**: 
+  - Clearly separated `handleSaveDraft` (for auto-saves) from `handleSubmit` (for manual submissions)
+  - Added explicit checks to ensure workflow continuation only triggers on actual form submissions
+  - Ensured draft saves use dedicated `saveDraft` endpoint, not form submission logic
+  - Added debug logging to track which function is being called
+- **Impact**: Auto-save operations now only save drafts without triggering workflow progression
+
 ### ✅ **System Status**: All Critical Issues Resolved
 - Master data APIs functional ✅
 - Draft saves working without validation errors ✅
+- Auto-save no longer triggers workflow alerts ✅ **NEW**
 - Form intermediate saves working without mode changes ✅  
 - No controlled/uncontrolled input warnings ✅
 - Auto-save properly debounced ✅
