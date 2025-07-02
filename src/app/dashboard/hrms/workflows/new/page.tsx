@@ -50,8 +50,8 @@ export default function NewWorkflowPage() {
     }
 
     // Validate required fields based on template
-    if (selectedTemplate === 'recruitment' && !workflowData.candidateName) {
-      toast.error('Candidate name is required for recruitment workflow');
+    if (selectedTemplate === 'recruitment' && !workflowData.requestedBy) {
+      toast.error('Requested by person is required for recruitment workflow');
       return;
     }
 
