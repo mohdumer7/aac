@@ -151,33 +151,65 @@ Both the **Visual Flow Designer** and **PDF Generation Service** have been succe
 
 ## Latest Changes - Master Data API Implementation
 
-## Final Status: ✅ **PHASE 1 COMPLETE - MASTER DATA API ISSUE RESOLVED**
+## **PHASE 2 COMPLETE - MAJOR ISSUE FIXES** ✅
 
-### 🎯 **Critical Issue Fixed**: Master Data 404 Errors
-The primary blocking issue that was preventing the HRMS "Start New Workflow" functionality has been successfully resolved.
+### 🎯 **Issue Fixed**: Next.js 15 API Route Parameters  
+- **Problem**: `params.formType` not being awaited in API routes causing 400 errors
+- **Root Cause**: Next.js 15 requires awaiting `params` before accessing properties
+- **Solution**: Updated all dynamic API routes to properly await params
+- **Files Fixed**: 
+  - `/api/hrms/forms/[formType]/route.ts`
+  - `/api/hrms/forms/[formType]/[id]/route.ts` 
+  - `/api/hrms/forms/[formType]/[id]/submit/route.ts`
+  - `/api/hrms/forms/[formType]/[id]/save-draft/route.ts`
+  - `/api/hrms/workflows/[id]/route.ts`
+  - `/api/hrms/workflows/[id]/advance/route.ts`
 
-**✅ Problem**: Frontend was getting 404 errors when calling `/api/master/departments` and `/api/master/users`
-**✅ Root Cause**: Missing specific API endpoints for master data types  
-**✅ Solution**: Created specific endpoints for all master data types
-**✅ Result**: Frontend can now successfully fetch master data for dropdowns
+### 🎯 **Issue Fixed**: Search-enabled Dropdowns
+- **Problem**: Users wanted search functionality in Select dropdowns
+- **Solution**: Created reusable `Combobox` component with search capabilities
+- **Implementation**: 
+  - New `Combobox` component with search, keyboard navigation, and option highlighting
+  - Updated workflow creation page to use searchable comboboxes for Users and Departments
+  - Enhanced UX with search terms and placeholder text
 
-### 🎯 **Additional System Issues Fixed**:
-**✅ Architecture Configuration**: Corrected supervisor configuration from separate frontend/backend services to single Next.js service
-**✅ Model Mapping**: Fixed database model key mapping (Department → DEPARTMENT_MASTER, User → USER_MASTER, etc.)
-**✅ Response Format**: Ensured consistent API response format across all endpoints
+### 🎯 **Issue Fixed**: Intermediate Save Redirects & View Mode Issues
+- **Problem**: Form switched to view mode after each save draft operation
+- **Root Cause**: `router.replace()` was forcing page navigation after saves  
+- **Solution**: 
+  - Replaced `router.replace()` with `window.history.replaceState()` for silent URL updates
+  - Prevents mode changes during intermediate saves
+  - Maintains form editing state while updating URL for future saves
 
-### 🎯 **Status**: Master Data Integration WORKING ✅
-- Departments dropdown in "Start New Workflow" will now populate ✅
-- Users dropdown for "Requested By" will now populate ✅  
-- All other master data endpoints functioning ✅
-- System ready for Phase 2: PDF Generation and Visual Flow Designer testing ✅
+### 🎯 **Issue Fixed**: Duplicate MongoDB Index Warning
+- **Problem**: `Duplicate schema index on {"empId":1}` warning
+- **Root Cause**: Both field-level `unique: true` and schema-level `index()` definitions
+- **Solution**: 
+  - Removed field-level unique constraint
+  - Added proper schema-level unique sparse index
+  - Eliminated duplicate index warnings
+
+### 🎯 **Enhancement**: Workflow Continuation & Draft Management
+- **Feature Added**: Automatic workflow step progression
+- **Implementation**:
+  - Workflow context stored in sessionStorage during workflow creation
+  - Form submission checks for next workflow steps
+  - User prompted to continue to next step or complete workflow
+  - Draft forms remain accessible and editable anytime
+  - Workflow progress tracked through completed steps
+
+### ✅ **System Status**: All Critical Issues Resolved
+- Master data APIs functional ✅
+- Form intermediate saves working without mode changes ✅  
+- Search-enabled dropdowns implemented ✅
+- Workflow continuation logic implemented ✅
+- Next.js 15 API compatibility achieved ✅
+- Database index warnings eliminated ✅
 
 ## **Next Priority Items**:
-1. **PDF Generation Enhancement** - Fix templates to show actual form data instead of empty PDFs
-2. **Visual Flow Designer Refinement** - Ensure approval flow functionality works correctly  
+1. **PDF Generation Enhancement** - Ensure PDFs show actual form data
+2. **Visual Flow Designer Testing** - Validate approval flow functionality  
 3. **Employee ID Auto-generation** - Implement automatic unique employee ID generation
-
-The core functionality blocking issue has been resolved. The HRMS system can now proceed with workflow creation as the master data APIs are fully functional.
 
 ## Validation Summary
 
