@@ -488,12 +488,6 @@ export const {
   useUpdateWorkflowInstanceMutation,
   useAdvanceWorkflowStepMutation,
 
-  // Master Data
-  useGetDepartmentsQuery,
-  useGetOrganizationsQuery,
-  useGetLocationsQuery,
-  useGetUsersQuery,
-  useGetRolesQuery
 } = hrmsApi;
 
 // Helper function to get form-specific hooks
