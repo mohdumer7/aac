@@ -282,9 +282,9 @@ export default function NewHRMSFormPage() {
             
             return; // Stop all further execution
           } else {
-            // Last step - redirect to workflows page
-            console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
-            router.push('/dashboard/hrms/workflows');
+            // Last step - show workflow completion with PDF options
+            console.log('🎉 WORKFLOW: Completed - showing completion dialog');
+            setShowWorkflowCompletion(true);
             return;
           }
         } else {
