@@ -70,16 +70,21 @@ export default function NewHRMSFormPage() {
 
   const handleSaveDraft = async (data: any) => {
     try {
+      let result;
       if (formId) {
         // Update existing draft
-        await saveDraft({ formType, id: formId, data }).unwrap();
+        result = await saveDraft({ formType, id: formId, data }).unwrap();
       } else {
         // Create new draft
-        const result = await createForm({ formType, data: { ...data, isDraft: true } }).unwrap();
-        if (result.data?._id) {
+        result = await createForm({ formType, data: { ...data, isDraft: true } }).unwrap();
+        if (result.success) {
           setFormId(result.data._id);
-          // Update URL to include the form ID for future saves
-          router.replace(`/dashboard/hrms/forms/${formType}/${result.data._id}/edit`);
+          // Don't redirect immediately, just update the URL quietly
+          window.history.replaceState(
+            {},
+            '',
+            `/dashboard/hrms/forms/${formType}/${result.data._id}/edit`
+          );
         }
       }
     } catch (error: any) {
