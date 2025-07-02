@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     const operations = { filter: finalFilter, sort };
 
     const response = await masterdataManager.getMasterData({ 
-      db: 'Role', 
+      db: 'ROLE_MASTER', 
       operations 
     });
 
