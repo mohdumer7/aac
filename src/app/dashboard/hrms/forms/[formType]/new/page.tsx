@@ -42,13 +42,16 @@ export default function NewHRMSFormPage() {
     if (isWorkflow && formType && workflow.steps.length > 0) {
       const stepIndex = workflow.steps.findIndex(step => step.formType === formType);
       if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        console.log('🔄 WORKFLOW: Syncing current step for form type:', { 
+        console.log('🔄 WORKFLOW: Current step index mismatch detected', { 
           formType, 
-          oldStepIndex: currentStepIndex, 
-          newStepIndex: stepIndex 
+          expectedStepIndex: stepIndex,
+          currentStepIndex: currentStepIndex,
+          allSteps: workflow.steps.map(s => ({ index: s.stepIndex, formType: s.formType }))
         });
-        // Use navigateToStep to properly update the context
-        workflow.navigateToStep(stepIndex);
+        
+        // The workflow context needs to be updated, but we can't use navigateToStep here
+        // as it would cause a redirect loop. The issue is that the workflow advancement
+        // logic in handleSubmit needs to be fixed instead.
       }
     }
   }, [isWorkflow, formType, workflow.steps.length, currentStepIndex]);
