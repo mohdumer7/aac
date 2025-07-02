@@ -191,15 +191,15 @@ export default function NewHRMSFormPage() {
         // NOTE: Don't show toast here - HRMSFormContainer already shows it
         
         // Check if this is part of a workflow
-        const workflowData = sessionStorage.getItem('workflowData');
-        if (workflowData) {
+        if (isWorkflow && workflow.steps.length > 0) {
           console.log('🟢 FORM SUBMIT: Workflow detected, processing continuation');
-          const parsedWorkflowData = JSON.parse(workflowData);
-          const currentStepIndex = parsedWorkflowData.template.steps.findIndex((step: any) => step.formType === formType);
           
-          if (currentStepIndex < parsedWorkflowData.template.steps.length - 1) {
+          // Update current step data
+          updateStepData(currentStepIndex, result.data._id, data);
+          
+          if (currentStepIndex < workflow.steps.length - 1) {
             // There are more steps in the workflow
-            const nextStep = parsedWorkflowData.template.steps[currentStepIndex + 1];
+            const nextStep = workflow.steps[currentStepIndex + 1];
             
             // Show option to continue to next step
             const continueToNext = confirm(
@@ -207,26 +207,13 @@ export default function NewHRMSFormPage() {
             );
             
             if (continueToNext) {
-              // Update workflow data with current form info
-              const updatedWorkflowData = {
-                ...parsedWorkflowData,
-                completedSteps: [...(parsedWorkflowData.completedSteps || []), {
-                  stepIndex: currentStepIndex,
-                  formType: formType,
-                  formId: result.data._id,
-                  completedAt: new Date().toISOString()
-                }]
-              };
-              sessionStorage.setItem('workflowData', JSON.stringify(updatedWorkflowData));
-              
               // Navigate to next step
-              router.push(`/dashboard/hrms/forms/${nextStep.formType}/new?workflow=true`);
+              workflow.navigateToStep(currentStepIndex + 1);
               return;
             }
           } else {
             // This is the last step in the workflow
             toast.success('Workflow completed successfully!');
-            sessionStorage.removeItem('workflowData');
           }
         }
         
