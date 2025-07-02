@@ -70,21 +70,31 @@ export default function HRMSFormContainer({
 
   const { handleSubmit, formState: { errors, isDirty }, watch } = methods;
 
-  // Auto-save draft functionality
+  // Auto-save draft functionality with proper debouncing
   useEffect(() => {
     if (mode === 'create' || mode === 'edit') {
+      let timeoutId: NodeJS.Timeout | null = null;
+      
       const subscription = watch((value, { name, type }) => {
         if (type === 'change' && onSaveDraft && isDraft && isDirty) {
-          // Debounce auto-save
-          const timeoutId = setTimeout(() => {
+          // Clear previous timeout
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          
+          // Set new timeout for auto-save
+          timeoutId = setTimeout(() => {
             handleSaveDraft(value);
-          }, 2000);
-
-          return () => clearTimeout(timeoutId);
+          }, 3000); // Increased to 3 seconds to reduce frequency
         }
       });
 
-      return () => subscription.unsubscribe();
+      return () => {
+        subscription.unsubscribe();
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      };
     }
   }, [watch, mode, onSaveDraft, isDraft, isDirty]);
 
