@@ -98,7 +98,11 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
                 className={cn(error && "border-destructive")}
-                onChange={(e) => controllerField.onChange(e.target.value ? Number(e.target.value) : '')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Allow empty string or convert to number
+                  controllerField.onChange(value === '' ? '' : Number(value));
+                }}
               />
             )}
           />
