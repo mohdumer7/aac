@@ -99,15 +99,24 @@ export default function NewHRMSFormPage() {
   const handleSubmit = async (data: any) => {
     try {
       let result;
+      
+      // First, ensure the form is saved with the submitted data
       if (formId) {
-        // Update and submit existing form
-        result = await createForm({ formType, data: { ...data, isDraft: false } }).unwrap();
+        // Update existing form and mark as submitted
+        result = await createForm({ 
+          formType, 
+          data: { ...data, isDraft: false, status: 'submitted' } 
+        }).unwrap();
       } else {
-        // Create and submit new form
-        result = await createForm({ formType, data: { ...data, isDraft: false } }).unwrap();
+        // Create new form and mark as submitted
+        result = await createForm({ 
+          formType, 
+          data: { ...data, isDraft: false, status: 'submitted' } 
+        }).unwrap();
       }
       
-      if (result.success) {
+      // Only proceed with workflow logic if this was an actual form submission (not draft save)
+      if (result.success && data.isDraft === false) {
         toast.success('Form submitted successfully!');
         
         // Check if this is part of a workflow
