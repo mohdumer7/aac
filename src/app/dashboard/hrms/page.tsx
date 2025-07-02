@@ -13,7 +13,11 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   AlertCircleIcon,
-  TrendingUpIcon
+  TrendingUpIcon,
+  EyeIcon,
+  WorkflowIcon,
+  UserIcon,
+  SettingsIcon
 } from 'lucide-react';
 import { useGetHRMSDashboardQuery } from '@/services/endpoints/hrmsApi';
 import { HRMSFormTypes, HRMS_FORM_CONFIG } from '@/types/hrms';
