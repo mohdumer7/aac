@@ -204,7 +204,8 @@ export default function NewWorkflowPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="requestedBy">Requested By (HR/Manager)</Label>
-                  <Select
+                  <Combobox
+                    options={userOptions}
                     value={workflowData.requestedById}
                     onValueChange={(value) => {
                       const selectedUser = users.find(user => user._id === value);
@@ -214,18 +215,10 @@ export default function NewWorkflowPage() {
                         requestedBy: selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : ''
                       });
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select requesting person" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {users.map((user) => (
-                        <SelectItem key={user._id} value={user._id}>
-                          {user.firstName} {user.lastName} ({user.email})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Select requesting person"
+                    searchPlaceholder="Search by name or email..."
+                    emptyText="No users found"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="position">Position Required</Label>
