@@ -27,7 +27,6 @@ interface WorkflowContextType {
   getStepData: (stepIndex: number) => any;
   getAllPreviousData: () => any;
   isStepAccessible: (stepIndex: number) => boolean;
-  syncCurrentStepByFormType: (formType: string) => void;
 }
 
 const WorkflowContext = createContext<WorkflowContextType | null>(null);
