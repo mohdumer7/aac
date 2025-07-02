@@ -381,6 +381,35 @@ export const hrmsApi = baseApi.injectEndpoints({
         { type: 'HRMS_Workflow', id },
         'HRMS_Workflow'
       ]
+    }),
+
+    // === Master Data ===
+    getDepartments: builder.query({
+      query: () => 'master/departments',
+      providesTags: ['Master']
+    }),
+
+    getOrganizations: builder.query({
+      query: () => 'master/organizations',
+      providesTags: ['Master']
+    }),
+
+    getLocations: builder.query({
+      query: () => 'master/locations',
+      providesTags: ['Master']
+    }),
+
+    getUsers: builder.query({
+      query: (params = {}) => ({
+        url: 'master/users',
+        params
+      }),
+      providesTags: ['User']
+    }),
+
+    getRoles: builder.query({
+      query: () => 'master/roles',
+      providesTags: ['Master']
     })
   }),
   overrideExisting: false
