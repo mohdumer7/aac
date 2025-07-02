@@ -194,13 +194,14 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false
             }}
             render={({ field: controllerField }) => (
               <RadioGroup
                 onValueChange={controllerField.onChange}
-                value={controllerField.value}
+                value={controllerField.value || ""}
                 disabled={disabled || field.disabled}
                 className="flex flex-col space-y-2"
               >
