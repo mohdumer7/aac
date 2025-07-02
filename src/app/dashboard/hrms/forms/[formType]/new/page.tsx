@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import HRMSFormContainer from '@/components/hrms/HRMSFormContainer';
 import HRMSFormSection from '@/components/hrms/HRMSFormSection';
 import WorkflowNavigation from '@/components/hrms/WorkflowNavigation';
+import PDFGenerator from '@/components/hrms/PDFGenerator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { getFormConfig } from '@/configs/hrms-forms';
