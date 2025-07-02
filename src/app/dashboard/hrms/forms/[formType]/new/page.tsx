@@ -37,10 +37,34 @@ export default function NewHRMSFormPage() {
   const [createForm, { isLoading }] = useCreateFormMutation();
   const [saveDraft] = useSaveDraftMutation();
   
-  // Data for dropdowns
-  const { data: departmentsData } = useGetDepartmentsQuery({});
-  const { data: approversData } = useGetAvailableApproversQuery({});
-  const { data: countriesData } = useGetCountriesQuery({});
+  // Get prefill data from previous workflow steps
+  const getInitialFormData = () => {
+    if (!isWorkflow) return {};
+    
+    const previousData = getAllPreviousData();
+    const currentStepData = getStepData(currentStepIndex);
+    
+    console.log('📋 WORKFLOW: Getting initial form data', {
+      formType,
+      currentStepIndex,
+      previousData,
+      currentStepData
+    });
+    
+    // Combine previous data with current step data
+    return { ...previousData, ...currentStepData };
+  };
+
+  // Get fields that should be disabled (already filled in previous steps)
+  const getDisabledFields = () => {
+    if (!isWorkflow || currentStepIndex === 0) return [];
+    
+    const previousData = getAllPreviousData();
+    const disabledFields = Object.keys(previousData);
+    
+    console.log('🔒 WORKFLOW: Disabled fields from previous steps', disabledFields);
+    return disabledFields;
+  };
 
   useEffect(() => {
     const config = getFormConfig(formType);
