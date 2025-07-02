@@ -329,6 +329,58 @@ export const hrmsApi = baseApi.injectEndpoints({
         { type: 'HRMS_ApprovalFlow', id },
         'HRMS_ApprovalFlow'
       ]
+    }),
+
+    // === Workflow Management ===
+    getWorkflowInstances: builder.query({
+      query: ({ status, workflowType, page = 1, limit = 10 } = {}) => {
+        const params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (workflowType) params.append('workflowType', workflowType);
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
+        
+        return `hrms/workflows?${params.toString()}`;
+      },
+      providesTags: ['HRMS_Workflow']
+    }),
+
+    getWorkflowById: builder.query({
+      query: (id) => `hrms/workflows/${id}`,
+      providesTags: (result, error, id) => [{ type: 'HRMS_Workflow', id }]
+    }),
+
+    createWorkflowInstance: builder.mutation({
+      query: (workflowData) => ({
+        url: 'hrms/workflows',
+        method: 'POST',
+        body: workflowData
+      }),
+      invalidatesTags: ['HRMS_Workflow']
+    }),
+
+    updateWorkflowInstance: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `hrms/workflows/${id}`,
+        method: 'PUT',
+        body: data
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'HRMS_Workflow', id },
+        'HRMS_Workflow'
+      ]
+    }),
+
+    advanceWorkflowStep: builder.mutation({
+      query: ({ id, stepData }) => ({
+        url: `hrms/workflows/${id}/advance`,
+        method: 'POST',
+        body: stepData
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'HRMS_Workflow', id },
+        'HRMS_Workflow'
+      ]
     })
   }),
   overrideExisting: false
