@@ -32,14 +32,23 @@ export default function NewWorkflowPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(templateParam || '');
   const [workflowData, setWorkflowData] = useState({
     requestedBy: '',
+    requestedById: '',
     candidateName: '',
     employeeName: '',
     position: '',
     department: '',
+    departmentId: '',
     expectedEndDate: '',
     comments: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch master data
+  const { data: departmentsData } = useGetDepartmentsQuery();
+  const { data: usersData } = useGetUsersQuery();
+
+  const departments = departmentsData?.data || [];
+  const users = usersData?.data || [];
 
   const handleTemplateSelect = (templateKey: string) => {
     setSelectedTemplate(templateKey);
