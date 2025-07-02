@@ -143,8 +143,14 @@ export class HRMSPDFGenerator {
   private static createFormTemplate(templateData: FormTemplateData): string {
     const { formType, formData, submittedBy, submissionDate, approvalHistory, organizationLogo, organizationName } = templateData;
 
+    // Ensure we have actual form data
+    if (!formData || Object.keys(formData).length === 0) {
+      console.warn('No form data provided for PDF generation');
+      return this.createEmptyFormTemplate(formType, organizationName, organizationLogo);
+    }
+
     const baseTemplate = `
-      <div style="max-width: 210mm; margin: 0 auto; padding: 20px; background: white;">
+      <div style="max-width: 210mm; margin: 0 auto; padding: 20px; background: white; font-family: 'Arial', sans-serif;">
         ${this.createHeader(organizationName, organizationLogo)}
         ${this.getFormTypeTemplate(formType, formData)}
         ${this.createSubmissionInfo(submittedBy, submissionDate)}
