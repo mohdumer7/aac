@@ -45,6 +45,7 @@ export default function HRMSLayout({
         
         // Special formatting for known paths
         if (path === 'approval-flows') label = 'Approval Flows';
+        if (path === 'drafts') label = 'Draft Forms';
         if (path === 'manpower_requisition') label = 'Manpower Requisition';
         if (path === 'candidate_information') label = 'Candidate Information';
         if (path === 'business_trip_request') label = 'Business Trip Request';
