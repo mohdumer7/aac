@@ -606,13 +606,15 @@ export class HRMSPDFGenerator {
     `;
   }
 
-  // Helper method to format field values
+  // Helper method to format field values with better object handling
   private static formatFieldValue(value: any): string {
     if (value === null || value === undefined) return 'N/A';
     if (typeof value === 'boolean') return value ? 'Yes' : 'No';
     if (typeof value === 'object') {
       if (value.name) return value.name;
       if (value.title) return value.title;
+      if (value.displayName) return value.displayName;
+      if (value.firstName && value.lastName) return `${value.firstName} ${value.lastName}`;
       if (Array.isArray(value)) return value.join(', ');
       return JSON.stringify(value);
     }
@@ -623,6 +625,24 @@ export class HRMSPDFGenerator {
       } catch {
         return value;
       }
+    }
+    return String(value);
+  }
+
+  // Helper method to get display value for complex objects
+  private static getDisplayValue(value: any): string {
+    if (!value) return 'N/A';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'object') {
+      // Handle user objects
+      if (value.displayName) return value.displayName;
+      if (value.firstName && value.lastName) return `${value.firstName} ${value.lastName}`;
+      if (value.name) return value.name;
+      if (value.title) return value.title;
+      // Handle department/location objects
+      if (value.departmentName) return value.departmentName;
+      if (value.locationName) return value.locationName;
+      return JSON.stringify(value);
     }
     return String(value);
   }
