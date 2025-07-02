@@ -48,7 +48,7 @@ export async function GET(
     };
 
     const result = await HRMSManager.getForms(
-      params.formType,
+      formType,
       filters,
       pagination
     );
@@ -59,7 +59,7 @@ export async function GET(
       return NextResponse.json(result, { status: 400 });
     }
   } catch (error: any) {
-    console.error(`Error fetching ${params.formType}:`, error);
+    console.error(`Error fetching forms:`, error);
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }
