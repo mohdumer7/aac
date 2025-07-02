@@ -3,6 +3,7 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { usePathname } from 'next/navigation';
+import { WorkflowProvider } from '@/contexts/WorkflowContext';
 
 export default function HRMSLayout({
   children,
