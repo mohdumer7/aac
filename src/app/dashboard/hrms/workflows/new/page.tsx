@@ -93,24 +93,36 @@ export default function NewWorkflowPage() {
     setIsLoading(true);
 
     try {
-      // For now, redirect to the first form of the workflow
+      // Get template data
       const template = getTemplateByKey(selectedTemplate);
       if (template && template.steps.length > 0) {
         const firstStep = template.steps[0];
         
-        // Store workflow data in session storage for the form to pick up
-        sessionStorage.setItem('workflowData', JSON.stringify({
+        // Initialize workflow context
+        const workflowInitData = {
+          workflowId: Date.now().toString(),
           workflowType: selectedTemplate,
           template: template,
-          metadata: workflowData
-        }));
+          metadata: workflowData,
+          currentStepIndex: 0,
+          formData: {},
+          completedSteps: []
+        };
+        
+        console.log('🚀 WORKFLOW: Starting workflow with data:', workflowInitData);
+        
+        // Initialize the workflow context
+        initializeWorkflow(workflowInitData);
+        
+        // Store backup in session storage (for browser refresh recovery)
+        sessionStorage.setItem('workflowData', JSON.stringify(workflowInitData));
         
         // Redirect to the first form
         router.push(`/dashboard/hrms/forms/${firstStep.formType}/new?workflow=true`);
       }
     } catch (error: any) {
       console.error('Error starting workflow:', error);
-      toast.error('Failed to start workflow');
+      toast.error('Failed to start workflow: ' + error.message);
     } finally {
       setIsLoading(false);
     }
