@@ -187,12 +187,28 @@ export default function NewWorkflowPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="requestedBy">Requested By (HR/Manager)</Label>
-                  <Input
-                    id="requestedBy"
-                    value={workflowData.requestedBy || ''}
-                    onChange={(e) => setWorkflowData({ ...workflowData, requestedBy: e.target.value })}
-                    placeholder="Enter name of person requesting"
-                  />
+                  <Select
+                    value={workflowData.requestedById}
+                    onValueChange={(value) => {
+                      const selectedUser = users.find(user => user._id === value);
+                      setWorkflowData({ 
+                        ...workflowData, 
+                        requestedById: value,
+                        requestedBy: selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : ''
+                      });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select requesting person" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user._id} value={user._id}>
+                          {user.firstName} {user.lastName} ({user.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="position">Position Required</Label>
@@ -233,12 +249,28 @@ export default function NewWorkflowPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="department">Department</Label>
-                  <Input
-                    id="department"
-                    value={workflowData.department}
-                    onChange={(e) => setWorkflowData({ ...workflowData, department: e.target.value })}
-                    placeholder="Enter department"
-                  />
+                  <Select
+                    value={workflowData.departmentId}
+                    onValueChange={(value) => {
+                      const selectedDept = departments.find(dept => dept._id === value);
+                      setWorkflowData({ 
+                        ...workflowData, 
+                        departmentId: value,
+                        department: selectedDept ? selectedDept.name : ''
+                      });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept._id} value={dept._id}>
+                          {dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
