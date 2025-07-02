@@ -74,6 +74,9 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
+// Add unique index for empId
+UserSchema.index({ empId: 1 }, { unique: true, sparse: true });
+
 // Add autopopulate plugin to automatically populate referenced fields
 UserSchema.plugin(require('mongoose-autopopulate'));
 
