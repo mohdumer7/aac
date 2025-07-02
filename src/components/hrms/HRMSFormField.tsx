@@ -44,24 +44,26 @@ export default function HRMSFormField({ field, disabled = false }: HRMSFormField
           <Controller
             name={field.name}
             control={control}
+            defaultValue=""
             rules={{
               required: field.required ? `${field.label} is required` : false,
               pattern: field.validation?.pattern ? {
                 value: new RegExp(field.validation.pattern),
-                message: field.validation.errorMessage || `Invalid ${field.label.toLowerCase()}`
+                message: field.validation.message || 'Invalid format'
               } : undefined,
-              minLength: field.validation?.min ? {
-                value: field.validation.min,
-                message: `${field.label} must be at least ${field.validation.min} characters`
+              minLength: field.validation?.minLength ? {
+                value: field.validation.minLength,
+                message: `Minimum ${field.validation.minLength} characters required`
               } : undefined,
-              maxLength: field.validation?.max ? {
-                value: field.validation.max,
-                message: `${field.label} must be no more than ${field.validation.max} characters`
+              maxLength: field.validation?.maxLength ? {
+                value: field.validation.maxLength,
+                message: `Maximum ${field.validation.maxLength} characters allowed`
               } : undefined
             }}
             render={({ field: controllerField }) => (
               <Input
                 {...controllerField}
+                value={controllerField.value || ''}
                 type={field.type}
                 placeholder={field.placeholder}
                 disabled={disabled || field.disabled}
