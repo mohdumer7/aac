@@ -259,7 +259,8 @@ export default function NewWorkflowPage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="department">Department</Label>
-                  <Select
+                  <Combobox
+                    options={departmentOptions}
                     value={workflowData.departmentId}
                     onValueChange={(value) => {
                       const selectedDept = departments.find(dept => dept._id === value);
@@ -269,18 +270,10 @@ export default function NewWorkflowPage() {
                         department: selectedDept ? selectedDept.name : ''
                       });
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map((dept) => (
-                        <SelectItem key={dept._id} value={dept._id}>
-                          {dept.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Select department"
+                    searchPlaceholder="Search departments..."
+                    emptyText="No departments found"
+                  />
                 </div>
 
                 <div className="space-y-2">
