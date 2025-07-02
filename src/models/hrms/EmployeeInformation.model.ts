@@ -323,6 +323,33 @@ EmployeeInformationSchema.pre('save', function(next) {
   }
 });
 
+// Auto-generate unique empId if not provided or handle conflicts
+EmployeeInformationSchema.pre('save', async function(next) {
+  if (!this.empId || this.empId === '' || this.empId === '123321') {
+    try {
+      // Generate unique employee ID
+      const timestamp = Date.now().toString().slice(-6);
+      const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      const newEmpId = `EMP${timestamp}${randomNum}`;
+      
+      // Check if this ID already exists
+      const existing = await mongoose.model('EmployeeInformation').findOne({ empId: newEmpId });
+      if (!existing) {
+        this.empId = newEmpId;
+        console.log('📝 AUTO-GENERATED empId:', newEmpId);
+      } else {
+        // If by chance it exists, add more randomness
+        this.empId = `EMP${Date.now()}${Math.floor(Math.random() * 10000)}`;
+      }
+    } catch (error) {
+      console.error('Error generating empId:', error);
+      // Fallback to timestamp-based ID
+      this.empId = `EMP${Date.now()}`;
+    }
+  }
+  next();
+});
+
 // Index for efficient queries
 EmployeeInformationSchema.index({ empId: 1 });
 EmployeeInformationSchema.index({ empName: 1 });
