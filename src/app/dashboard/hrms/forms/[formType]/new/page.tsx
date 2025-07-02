@@ -72,10 +72,10 @@ export default function NewHRMSFormPage() {
     try {
       let result;
       if (formId) {
-        // Update existing draft
+        // Update existing draft using the dedicated saveDraft endpoint
         result = await saveDraft({ formType, id: formId, data }).unwrap();
       } else {
-        // Create new draft
+        // Create new draft using createForm with isDraft: true
         result = await createForm({ formType, data: { ...data, isDraft: true } }).unwrap();
         if (result.success) {
           setFormId(result.data._id);
@@ -87,6 +87,10 @@ export default function NewHRMSFormPage() {
           );
         }
       }
+      
+      // NOTE: No workflow logic here - this is only for draft saves
+      // Draft saves should never trigger workflow progression
+      
     } catch (error: any) {
       throw new Error(error.message || 'Failed to save draft');
     }
