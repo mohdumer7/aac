@@ -62,6 +62,16 @@ export default function NewHRMSFormPage() {
           };
         }
         
+        if (field.name === 'nationality') {
+          return {
+            ...field,
+            options: countriesData?.data?.map((country: any) => ({
+              label: country.name,
+              value: country.name
+            })) || []
+          };
+        }
+        
         return field;
       })
     }));
