@@ -113,7 +113,7 @@ export default function NewHRMSFormPage() {
             ...field,
             options: countriesData?.data?.map((country: any) => ({
               label: country.name,
-              value: country.name
+              value: country._id  // Use ObjectId instead of name
             })) || []
           };
         }
