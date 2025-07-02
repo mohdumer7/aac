@@ -293,6 +293,21 @@ export default function HRMSDashboardPage() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="forms" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Form Statistics</CardTitle>
+                <CardDescription>Overview of all form submissions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Object.values(HRMSFormTypes).map((formType) => {
+                    const stats = formStats[formType] || { total: 0, drafts: 0, submitted: 0, approved: 0, rejected: 0, pending: 0 };
+                    const config = HRMS_FORM_CONFIG[formType];
+                    const approvalRate = stats.submitted > 0 ? Math.round((stats.approved / stats.submitted) * 100) : 0;
 
                     return (
                       <div key={formType} className="flex items-center justify-between p-3 border rounded-lg">
