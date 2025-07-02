@@ -5,7 +5,8 @@ from datetime import datetime
 
 class HRMSAPITester:
     def __init__(self, base_url="http://localhost:3000/api"):
-        self.base_url = base_url
+        # Use the API_BASE_URL from .env.local
+        self.base_url = "http://localhost:3000/api"
         self.token = None
         self.tests_run = 0
         self.tests_passed = 0
