@@ -131,7 +131,6 @@ const TicketFormComponent: React.FC<TicketFormComponentProps> = ({
     };
     
     // Submit the form data
-    onSubmit(formData).then((response) => {
     onSubmit(formData);
   };
   
