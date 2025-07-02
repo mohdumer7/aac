@@ -102,18 +102,21 @@ export default function NewHRMSFormPage() {
   };
 
   const handleSubmit = async (data: any) => {
+    console.log('🟢 FORM SUBMIT: handleSubmit called', { formId, formType });
     try {
       let result;
       
       // First, ensure the form is saved with the submitted data
       if (formId) {
         // Update existing form and mark as submitted
+        console.log('🟢 FORM SUBMIT: Updating existing form for submission');
         result = await createForm({ 
           formType, 
           data: { ...data, isDraft: false, status: 'submitted' } 
         }).unwrap();
       } else {
         // Create new form and mark as submitted
+        console.log('🟢 FORM SUBMIT: Creating new form for submission');
         result = await createForm({ 
           formType, 
           data: { ...data, isDraft: false, status: 'submitted' } 
@@ -122,11 +125,13 @@ export default function NewHRMSFormPage() {
       
       // Only proceed with workflow logic if this was successful
       if (result.success) {
+        console.log('🟢 FORM SUBMIT: Form submitted successfully, checking workflow');
         // NOTE: Don't show toast here - HRMSFormContainer already shows it
         
         // Check if this is part of a workflow
         const workflowData = sessionStorage.getItem('workflowData');
         if (workflowData) {
+          console.log('🟢 FORM SUBMIT: Workflow detected, processing continuation');
           const parsedWorkflowData = JSON.parse(workflowData);
           const currentStepIndex = parsedWorkflowData.template.steps.findIndex((step: any) => step.formType === formType);
           
@@ -167,6 +172,7 @@ export default function NewHRMSFormPage() {
         router.push(`/dashboard/hrms/forms/${formType}/${result.data._id}`);
       }
     } catch (error: any) {
+      console.error('🔴 FORM SUBMIT: Failed', error);
       throw new Error(error.message || 'Failed to submit form');
     }
   };
