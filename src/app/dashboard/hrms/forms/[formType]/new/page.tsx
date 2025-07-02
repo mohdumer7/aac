@@ -233,10 +233,18 @@ export default function NewHRMSFormPage() {
             const nextStep = workflow.steps[nextStepIndex];
             
             console.log('🔄 WORKFLOW: Advancing to step', nextStepIndex, nextStep);
+            console.log('🔄 WORKFLOW: All workflow steps:', workflow.steps);
             
-            // Update workflow context to track the correct step
-            workflow.navigateToStep(nextStepIndex);
-            return; // Stop all further execution - let the workflow context handle navigation
+            // CRITICAL: Update the workflow context current step BEFORE navigation
+            // We need to ensure the context reflects the new step
+            
+            // Use a small delay to ensure the step data update completes first
+            setTimeout(() => {
+              console.log('🚀 WORKFLOW: Navigating to next step after data update');
+              workflow.navigateToStep(nextStepIndex);
+            }, 50);
+            
+            return; // Stop all further execution
           } else {
             // Last step - redirect to workflows page
             console.log('🎉 WORKFLOW: Completed - redirecting to workflows');
