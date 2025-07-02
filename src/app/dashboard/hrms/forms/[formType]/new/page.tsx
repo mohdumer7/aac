@@ -37,6 +37,14 @@ export default function NewHRMSFormPage() {
   const [createForm, { isLoading }] = useCreateFormMutation();
   const [saveDraft] = useSaveDraftMutation();
   
+  // Sync workflow context with current form type
+  useEffect(() => {
+    if (isWorkflow && formType) {
+      console.log('🔄 WORKFLOW: Syncing current step for form type:', formType);
+      workflow.syncCurrentStepByFormType(formType);
+    }
+  }, [isWorkflow, formType, workflow.steps.length]);
+
   // Get prefill data from previous workflow steps
   const getInitialFormData = () => {
     if (!isWorkflow) return {};
