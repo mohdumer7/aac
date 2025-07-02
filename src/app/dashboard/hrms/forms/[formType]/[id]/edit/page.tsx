@@ -21,6 +21,8 @@ import { HRMSFormConfig } from '@/types/hrms';
 export default function EditHRMSFormPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isWorkflow = searchParams.get('workflow') === 'true';
   const formType = params.formType as string;
   const formId = params.id as string;
   
