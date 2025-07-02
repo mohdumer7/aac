@@ -167,7 +167,7 @@ export default function NewHRMSFormPage() {
     }));
 
     setFormConfig(updatedConfig);
-  }, [formType, router, departmentsData, approversData, countriesData]);
+  }, [formType, router, departmentsData, approversData, countriesData, rolesData, organizationsData, locationsData]);
 
   const handleSaveDraft = async (data: any) => {
     console.log('🟡 DRAFT SAVE: handleSaveDraft called', { formId, formType, isWorkflow });
